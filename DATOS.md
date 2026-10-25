@@ -20,7 +20,7 @@ Este documento recoge los defectos encontrados en `datos/pois.json` (18 registro
 | `datos/pois.json` | `5f9d5636e9b019f0ae20bbea70d837dd843b6c7f7396a2a6c48b731065758072` |
 | `datos/evaluacion.json` | `1be49ad076b3262531991e07125fb07510b3da26c7269b3fb94bf3300214edb9` |
 
-Para comprobarlas: `sha256sum datos/*.json` (Linux, macOS, Git Bash) o `Get-FileHash datos\*.json` (PowerShell).
+Para comprobarlas: `sha256sum datos/*.json` (Linux, macOS, Git Bash) o `Get-FileHash datos\*.json` (PowerShell). El test [`backend/tests/test_datos_originales.py`](backend/tests/test_datos_originales.py) hace la misma comprobación en cada ejecución de `pytest`, así que cualquier cambio accidental en los originales hace fallar los tests.
 
 ## Inventario de defectos
 

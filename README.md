@@ -36,7 +36,7 @@ Requisitos: Python 3.12 y Node.js 24 (≥ 24.15) con npm.
 cd backend
 python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+pip install -r requirements-dev.txt   # dependencias de ejecución + tests, lint y formato
 uvicorn app.main:app --reload --port 8000
 ```
 
@@ -47,6 +47,23 @@ cd frontend
 npm ci
 npm start                          # http://localhost:4200 · /api se redirige a localhost:8000
 ```
+
+## Tests, lint y formato
+
+Los comandos del backend se ejecutan en `backend/` con el entorno virtual activado. Los del frontend, en `frontend/`.
+
+| | Backend | Frontend |
+|---|---|---|
+| Tests | `pytest` | `npm test -- --watch=false` |
+| Lint | `ruff check .` | `npm run lint` (incluye las reglas de accesibilidad de plantillas de angular-eslint) |
+| Formato (comprobar) | `ruff format --check .` | `npm run format:check` |
+| Formato (aplicar) | `ruff format .` | `npm run format` |
+| Compilación | — | `npm run build` (TypeScript y plantillas en modo estricto) |
+
+Qué cubren los tests ahora mismo:
+
+- **Backend:** que la API responde en `/health`, y que `datos/` sigue idéntico a los originales, comprobado con su huella SHA-256 (ver [DATOS.md](DATOS.md)).
+- **Frontend:** que la pantalla muestra si la API está disponible o no, simulando la respuesta de `/api/health`.
 
 ## Arquitectura
 
@@ -71,6 +88,7 @@ Al arrancar (⏳ fase 1): datos/pois.json original ─► limpieza ─► catál
 ├── datos/                 datos originales de la prueba, sin modificar
 ├── backend/               API (Python 3.12, FastAPI)
 │   ├── app/
+│   ├── tests/
 │   └── Dockerfile
 ├── frontend/              pantalla (Angular 22) servida con nginx
 │   ├── src/
@@ -109,7 +127,7 @@ Donde el enunciado deja margen se ha decidido lo siguiente. Si alguna decisión 
 | Fase | Contenido | Estado |
 |---|---|---|
 | Infraestructura | Docker Compose, API y pantalla mínimas, proxy | ✅ verificado |
-| Calidad | Tests, lint y formato | ⏳ |
+| Calidad | Tests, lint y formato | ✅ verificado |
 | Datos | Limpieza y normalización del catálogo | ⏳ |
 | Backend | `GET /pois` y `GET /pois/{id}` | ⏳ |
 | Asistente | `POST /preguntar` | ⏳ |
