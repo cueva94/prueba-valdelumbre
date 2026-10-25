@@ -1,0 +1,5 @@
+# Código y configuración: LF en el repositorio (los contenedores son Linux).
+* text=auto eol=lf
+
+# Datos originales de la prueba: se guardan byte a byte, sin convertir saltos de línea.
+datos/** -text

@@ -1,0 +1,7 @@
+# Contexto de construcción de la API (raíz del repo): lista blanca.
+# Solo entra lo imprescindible; nunca .env, .git, node_modules ni entornos virtuales.
+*
+!backend/requirements.txt
+!backend/app/
+!datos/
+**/__pycache__

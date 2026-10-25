@@ -1,0 +1,6 @@
+# Dependencias de ejecución (versiones fijadas para que la instalación sea reproducible).
+fastapi==0.162.0
+uvicorn==0.54.0
+pydantic==2.14.1
+# Base de datos de zonas horarias IANA: Windows no la trae y algunas imágenes slim tampoco.
+tzdata==2026.5

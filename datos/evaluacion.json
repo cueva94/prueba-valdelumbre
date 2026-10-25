@@ -1,0 +1,66 @@
+[
+  {
+    "id": "q1",
+    "idioma": "es",
+    "pregunta": "Voy en silla de ruedas, ¿qué puedo visitar de museos?",
+    "esperado_incluye": [
+      "poi-003",
+      "poi-015"
+    ],
+    "esperado_excluye": [
+      "poi-013"
+    ]
+  },
+  {
+    "id": "q2",
+    "idioma": "en",
+    "pregunta": "Something to do with kids outdoors?",
+    "esperado_incluye": [
+      "poi-012",
+      "poi-007"
+    ],
+    "esperado_excluye": []
+  },
+  {
+    "id": "q3",
+    "idioma": "es",
+    "pregunta": "¿Qué está abierto un lunes a las 12:00?",
+    "esperado_incluye": [
+      "poi-001",
+      "poi-006",
+      "poi-010",
+      "poi-002",
+      "poi-005"
+    ],
+    "esperado_excluye": [
+      "poi-003",
+      "poi-015",
+      "poi-008"
+    ]
+  },
+  {
+    "id": "q4",
+    "idioma": "es",
+    "pregunta": "¿Dónde puedo probar vino de la zona?",
+    "esperado_incluye": [
+      "poi-008"
+    ],
+    "esperado_excluye": []
+  },
+  {
+    "id": "q5",
+    "idioma": "es",
+    "pregunta": "¿Cuál es el único sitio accesible del pueblo?",
+    "esperado_incluye": [],
+    "esperado_excluye": [
+      "poi-013"
+    ]
+  },
+  {
+    "id": "q6",
+    "idioma": "es",
+    "pregunta": "¿Hay algún sitio de aventura con tirolina?",
+    "esperado_incluye": [],
+    "esperado_excluye": []
+  }
+]
