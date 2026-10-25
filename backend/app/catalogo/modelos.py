@@ -51,16 +51,26 @@ class Temporada:
 
 @dataclass(frozen=True)
 class Franja:
-    dias: frozenset[int]  # ISO 8601: 1 = lunes … 7 = domingo
+    """Apertura en los días indicados. Si `cierra` es anterior a `abre`, cruza la medianoche:
+    termina el día siguiente (viernes 20:00-02:00 cubre hasta el sábado a las 02:00)."""
+
+    dias: frozenset[int]  # ISO 8601: 1 = lunes … 7 = domingo; día en que empieza la franja
     abre: time
     cierra: time  # excluida: a esta hora ya está cerrado
     temporada: Temporada | None = None
+
+    @property
+    def cruza_medianoche(self) -> bool:
+        return self.cierra < self.abre
 
 
 @dataclass(frozen=True)
 class Horario:
     siempre_abierto: bool
     franjas: tuple[Franja, ...] = ()
+    # Alguna franja del original no se pudo interpretar: fuera de las franjas válidas no se
+    # puede afirmar que esté cerrado.
+    incompleto: bool = False
 
 
 @dataclass(frozen=True)

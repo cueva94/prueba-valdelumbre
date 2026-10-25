@@ -1,10 +1,10 @@
 """Estado de apertura de un punto en un momento dado: abierto, cerrado o desconocido."""
 
 from dataclasses import dataclass
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from enum import StrEnum
 
-from app.catalogo.modelos import Horario
+from app.catalogo.modelos import Franja, Horario
 
 
 class EstadoApertura(StrEnum):
@@ -35,13 +35,34 @@ def estado_apertura(horario: Horario, momento: Momento) -> EstadoApertura:
 
     depende_de_la_fecha = False
     for franja in horario.franjas:
-        if momento.dia not in franja.dias or not franja.abre <= momento.hora < franja.cierra:
+        cubre, fecha_de_inicio = _cubre(franja, momento)
+        if not cubre:
             continue
         if franja.temporada is None:
             return EstadoApertura.ABIERTO
-        if momento.fecha is None:
+        if fecha_de_inicio is None:
             depende_de_la_fecha = True
-        elif franja.temporada.incluye(momento.fecha):
+        elif franja.temporada.incluye(fecha_de_inicio):
             return EstadoApertura.ABIERTO
 
-    return EstadoApertura.DESCONOCIDO if depende_de_la_fecha else EstadoApertura.CERRADO
+    if depende_de_la_fecha or horario.incompleto:
+        return EstadoApertura.DESCONOCIDO
+    return EstadoApertura.CERRADO
+
+
+def _cubre(franja: Franja, momento: Momento) -> tuple[bool, date | None]:
+    """Si la franja cubre el momento y en qué fecha empezó esa apertura (si se conoce)."""
+    if not franja.cruza_medianoche:
+        cubre = momento.dia in franja.dias and franja.abre <= momento.hora < franja.cierra
+        return cubre, momento.fecha
+    # Tramo de la noche: desde la apertura hasta las 24:00 del día en que empieza.
+    if momento.dia in franja.dias and momento.hora >= franja.abre:
+        return True, momento.fecha
+    # Tramo de la madrugada: desde las 00:00 hasta el cierre, del día siguiente.
+    if _dia_anterior(momento.dia) in franja.dias and momento.hora < franja.cierra:
+        return True, momento.fecha - timedelta(days=1) if momento.fecha else None
+    return False, None
+
+
+def _dia_anterior(dia: int) -> int:
+    return 7 if dia == 1 else dia - 1

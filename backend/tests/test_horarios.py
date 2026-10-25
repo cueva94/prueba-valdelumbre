@@ -7,7 +7,12 @@ import pytest
 from app.catalogo.horarios import EstadoApertura, Momento, estado_apertura
 from app.catalogo.modelos import Franja, Horario, Temporada
 
-LUNES, MARTES, SABADO, DOMINGO = 1, 2, 6, 7
+LUNES, MARTES, VIERNES, SABADO, DOMINGO = 1, 2, 5, 6, 7
+ABIERTO, CERRADO, DESCONOCIDO = (
+    EstadoApertura.ABIERTO,
+    EstadoApertura.CERRADO,
+    EstadoApertura.DESCONOCIDO,
+)
 
 # Turno partido de lunes a sábado: 10:00-14:00 y 17:00-20:00.
 TURNO_PARTIDO = Horario(
@@ -91,3 +96,70 @@ def test_temporada_que_cruza_el_fin_de_ano(fecha, incluida):
     invierno = Temporada(inicio=(12, 1), fin=(2, 28))
 
     assert invierno.incluye(fecha) is incluida
+
+
+# --- Franjas que cruzan la medianoche --------------------------------------------------------
+
+# Viernes y sábado de 20:00 a 02:00: la madrugada pertenece a la noche anterior.
+NOCHES_DE_FIN_DE_SEMANA = Horario(
+    siempre_abierto=False,
+    franjas=(Franja(dias=frozenset({VIERNES, SABADO}), abre=time(20), cierra=time(2)),),
+)
+
+
+@pytest.mark.parametrize(
+    ("dia", "hora", "esperado"),
+    [
+        (VIERNES, time(19, 59), CERRADO),
+        (VIERNES, time(20, 0), ABIERTO),  # la apertura está incluida
+        (VIERNES, time(23, 59), ABIERTO),
+        (SABADO, time(0, 30), ABIERTO),  # madrugada del sábado: la apertura empezó el viernes
+        (SABADO, time(2, 0), CERRADO),  # el cierre no está incluido
+        (SABADO, time(12, 0), CERRADO),
+        (SABADO, time(23, 59), ABIERTO),
+        (DOMINGO, time(0, 30), ABIERTO),  # madrugada del domingo: empezó el sábado
+        (DOMINGO, time(2, 0), CERRADO),
+        (VIERNES, time(0, 30), CERRADO),  # el jueves no abre: su madrugada está cerrada
+        (LUNES, time(0, 30), CERRADO),  # el domingo no abre
+    ],
+)
+def test_franja_que_cruza_la_medianoche(dia, hora, esperado):
+    assert estado_apertura(NOCHES_DE_FIN_DE_SEMANA, Momento(dia, hora)) == esperado
+
+
+def test_la_madrugada_del_lunes_pertenece_al_domingo():
+    domingo_noche = Horario(
+        siempre_abierto=False,
+        franjas=(Franja(dias=frozenset({DOMINGO}), abre=time(22), cierra=time(1)),),
+    )
+
+    assert estado_apertura(domingo_noche, Momento(LUNES, time(0, 30))) == ABIERTO
+    assert estado_apertura(domingo_noche, Momento(DOMINGO, time(0, 30))) == CERRADO
+
+
+def test_la_temporada_de_una_franja_nocturna_se_mira_el_dia_en_que_empezo():
+    noches_de_verano = Horario(
+        siempre_abierto=False,
+        franjas=(
+            Franja(dias=frozenset(range(1, 8)), abre=time(22), cierra=time(2), temporada=VERANO),
+        ),
+    )
+    # 1/10 a la 01:00: la apertura empezó el 30/9, último día de la temporada.
+    uno_de_octubre = Momento.desde_datetime(datetime(2026, 10, 1, 1, 0))
+    # 1/6 a la 01:00: la apertura habría empezado el 31/5, antes de la temporada.
+    uno_de_junio = Momento.desde_datetime(datetime(2026, 6, 1, 1, 0))
+
+    assert estado_apertura(noches_de_verano, uno_de_octubre) == ABIERTO
+    assert estado_apertura(noches_de_verano, uno_de_junio) == CERRADO
+
+
+# --- Horarios incompletos --------------------------------------------------------------------
+
+
+def test_un_horario_incompleto_no_afirma_que_este_cerrado():
+    # Mismo turno partido, pero en el original había alguna franja que no se pudo interpretar.
+    incompleto = Horario(siempre_abierto=False, franjas=TURNO_PARTIDO.franjas, incompleto=True)
+
+    assert estado_apertura(incompleto, Momento(LUNES, time(12))) == ABIERTO
+    assert estado_apertura(incompleto, Momento(LUNES, time(15, 30))) == DESCONOCIDO
+    assert estado_apertura(TURNO_PARTIDO, Momento(LUNES, time(15, 30))) == CERRADO

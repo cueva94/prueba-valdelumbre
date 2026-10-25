@@ -157,4 +157,10 @@ Donde el enunciado deja margen se ha decidido lo siguiente. Si alguna decisión 
 
 Se completará al cerrar el desarrollo. Por ahora:
 
-- **Limpieza de datos:** la detección de instrucciones incrustadas funciona por patrones; los duplicados se detectan solo con el mismo nombre; las franjas que cruzan la medianoche se descartan. El detalle y los motivos están en [DATOS.md → Límites conocidos](DATOS.md#límites-conocidos-de-estas-reglas).
+- **Limpieza de datos:**
+  - La detección de instrucciones incrustadas funciona por patrones. Es una medida de limpieza, no una defensa infalible.
+  - Los duplicados se detectan solo cuando el nombre normalizado es idéntico.
+  - Las coordenadas erróneas por pocos kilómetros no se detectan.
+
+  El detalle y los motivos están en [DATOS.md → Límites conocidos](DATOS.md#límites-conocidos-de-estas-reglas).
+- **Trabajo futuro:** un informe de *posibles* duplicados (nombres parecidos y muy cercanos) para revisarlos a mano, sin eliminarlos automáticamente.

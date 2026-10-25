@@ -6,7 +6,7 @@ Ninguna regla menciona ids concretos. Los defectos y las decisiones están en DA
 import math
 import re
 import statistics
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from datetime import date, time
 from typing import Any
 
@@ -24,10 +24,21 @@ from app.catalogo.modelos import (
 )
 from app.catalogo.texto import normalizar_texto, quitar_instrucciones
 
-# Un punto a más de esta distancia de la mediana del catálogo no está en el pueblo.
-RADIO_ZONA_KM = 50.0
-# Dos registros con el mismo nombre a menos de esta distancia son el mismo lugar.
-DISTANCIA_DUPLICADO_KM = 0.05
+
+@dataclass(frozen=True)
+class UmbralesLimpieza:
+    """Distancias de las reglas geográficas (DATOS.md → D2 y D3), configurables por parámetro."""
+
+    # Un punto a más de esta distancia del centro del catálogo (la mediana) no está en el pueblo.
+    # 10 km es el diámetro aproximado de un municipio español medio (~62 km²); en los datos de
+    # la prueba, el punto legítimo más lejano está a 2,6 km del centro.
+    radio_zona_km: float = 10.0
+    # Dos registros con el mismo nombre normalizado a esta distancia o menos son el mismo lugar.
+    # La distancia sola nunca basta: dos sitios distintos pueden estar puerta con puerta.
+    distancia_duplicado_km: float = 0.05
+
+
+UMBRALES_POR_DEFECTO = UmbralesLimpieza()
 
 _HORA = re.compile(r"^(\d{1,2}):(\d{2})$")
 _TEMPORADA = re.compile(r"^(\d{2})-(\d{2})/(\d{2})-(\d{2})$")
@@ -37,13 +48,16 @@ _PRECIO_EN_TEXTO = re.compile(rf"^{_NUMERO}(?:\s*[-\u2013]\s*{_NUMERO})?\s*(?:�
 _PALABRAS_GRATIS = {"gratis", "gratuito", "gratuita", "free"}
 
 
-def limpiar_catalogo(registros: list[Any]) -> Catalogo:
+def limpiar_catalogo(
+    registros: list[Any], umbrales: UmbralesLimpieza = UMBRALES_POR_DEFECTO
+) -> Catalogo:
     """Aplica todas las reglas y devuelve el catálogo publicable. No modifica `registros`."""
-    return _Limpieza().ejecutar(registros)
+    return _Limpieza(umbrales).ejecutar(registros)
 
 
 class _Limpieza:
-    def __init__(self) -> None:
+    def __init__(self, umbrales: UmbralesLimpieza) -> None:
+        self.umbrales = umbrales
         self.incidencias: list[Incidencia] = []
         self.excluidos: dict[str, str] = {}
         self.ids_vistos: set[str] = set()
@@ -190,8 +204,10 @@ class _Limpieza:
             return Horario(siempre_abierto=True)
         franjas_crudas = crudo.get("franjas")
         franjas = []
+        incompleto = False
         for indice, cruda in enumerate(franjas_crudas if isinstance(franjas_crudas, list) else []):
-            franja = self._franja(cruda, poi_id, f"horario.franjas[{indice}]")
+            franja, completa = self._franja(cruda, poi_id, f"horario.franjas[{indice}]")
+            incompleto = incompleto or not completa
             if franja:
                 franjas.append(franja)
         if not franjas:
@@ -199,18 +215,23 @@ class _Limpieza:
                 Defecto.HORARIO_DESCONOCIDO,
                 poi_id,
                 "horario",
-                "sin franjas horarias: apertura desconocida",
+                "sin franjas horarias interpretables: apertura desconocida",
             )
-        return Horario(siempre_abierto=False, franjas=tuple(franjas))
+        return Horario(siempre_abierto=False, franjas=tuple(franjas), incompleto=incompleto)
 
-    def _franja(self, cruda: Any, poi_id: str, campo: str) -> Franja | None:
-        """Una franja que no se puede interpretar con seguridad se descarta: nunca se adivina."""
+    def _franja(self, cruda: Any, poi_id: str, campo: str) -> tuple[Franja | None, bool]:
+        """Devuelve la franja (o None si no se puede interpretar) y si se ha leído completa.
+
+        Lo que no se puede interpretar con seguridad se descarta: nunca se adivina. Una franja
+        cuyo cierre es anterior a la apertura cruza la medianoche y es válida (20:00-02:00).
+        """
         if not isinstance(cruda, dict):
             return self._descartar_franja(poi_id, campo, "no es un objeto")
 
         dias_crudos = cruda.get("dias") if isinstance(cruda.get("dias"), list) else []
         dias = frozenset(d for d in dias_crudos if _es_dia(d))
-        if len(dias) < len(dias_crudos):
+        completa = len(dias) == len(dias_crudos)
+        if not completa:
             self.anotar(
                 Defecto.VALIDACION, poi_id, f"{campo}.dias", "días fuera de 1 a 7 ignorados"
             )
@@ -220,9 +241,9 @@ class _Limpieza:
         abre, cierra = _hora(cruda.get("abre")), _hora(cruda.get("cierra"))
         if abre is None or cierra is None:
             return self._descartar_franja(poi_id, campo, "hora de apertura o cierre no válida")
-        if cierra <= abre:
+        if cierra == abre:
             return self._descartar_franja(
-                poi_id, campo, "cierra antes de abrir o cruza la medianoche"
+                poi_id, campo, "abre y cierra a la misma hora: no se sabe si son 0 o 24 horas"
             )
 
         temporada = None
@@ -239,10 +260,11 @@ class _Limpieza:
                 f"solo abre en temporada ({cruda['temporada']}): "
                 "sin fecha, la apertura es desconocida",
             )
-        return Franja(dias=dias, abre=abre, cierra=cierra, temporada=temporada)
+        return Franja(dias=dias, abre=abre, cierra=cierra, temporada=temporada), completa
 
-    def _descartar_franja(self, poi_id: str, campo: str, motivo: str) -> None:
+    def _descartar_franja(self, poi_id: str, campo: str, motivo: str) -> tuple[None, bool]:
         self.anotar(Defecto.VALIDACION, poi_id, campo, f"franja descartada: {motivo}")
+        return None, False
 
     # --- Reglas sobre el catálogo completo -------------------------------------------------
 
@@ -259,14 +281,15 @@ class _Limpieza:
             lon=statistics.median(c.lon for c in conocidas),
         )
 
+        radio = self.umbrales.radio_zona_km
         resultado = []
         for poi in pois:
             actual = poi.coordenadas
-            if actual is None or _distancia_km(actual, centro) <= RADIO_ZONA_KM:
+            if actual is None or _distancia_km(actual, centro) <= radio:
                 resultado.append(poi)
                 continue
             invertidas = Coordenadas(lat=actual.lon, lon=actual.lat)
-            if _en_rango(invertidas) and _distancia_km(invertidas, centro) <= RADIO_ZONA_KM:
+            if _en_rango(invertidas) and _distancia_km(invertidas, centro) <= radio:
                 detalle = (
                     f"latitud y longitud intercambiadas ({actual.lat}, {actual.lon}): "
                     f"se corrigen a ({invertidas.lat}, {invertidas.lon})"
@@ -274,7 +297,7 @@ class _Limpieza:
                 corregidas: Coordenadas | None = invertidas
             else:
                 detalle = (
-                    f"({actual.lat}, {actual.lon}) a más de {RADIO_ZONA_KM:g} km del resto y sin "
+                    f"({actual.lat}, {actual.lon}) a más de {radio:g} km del resto y sin "
                     "corrección evidente: se marcan como desconocidas"
                 )
                 corregidas = None
@@ -284,9 +307,10 @@ class _Limpieza:
 
     def _quitar_duplicados(self, pois: list[Poi]) -> list[Poi]:
         """D2: mismo nombre normalizado y casi el mismo sitio; se conserva el más completo."""
+        distancia_maxima = self.umbrales.distancia_duplicado_km
         grupos: list[list[Poi]] = []
         for poi in pois:
-            grupo = next((g for g in grupos if _son_duplicados(g[0], poi)), None)
+            grupo = next((g for g in grupos if _son_duplicados(g[0], poi, distancia_maxima)), None)
             if grupo is None:
                 grupos.append([poi])
             else:
@@ -381,11 +405,11 @@ def _distancia_km(a: Coordenadas, b: Coordenadas) -> float:
     return 2 * 6371.0 * math.asin(math.sqrt(min(1.0, h)))
 
 
-def _son_duplicados(a: Poi, b: Poi) -> bool:
+def _son_duplicados(a: Poi, b: Poi, distancia_maxima_km: float) -> bool:
     if a.coordenadas is None or b.coordenadas is None:
         return False  # sin saber dónde están, no se puede afirmar que sean el mismo lugar
     mismo_nombre = normalizar_texto(a.nombre.es) == normalizar_texto(b.nombre.es)
-    return mismo_nombre and _distancia_km(a.coordenadas, b.coordenadas) <= DISTANCIA_DUPLICADO_KM
+    return mismo_nombre and _distancia_km(a.coordenadas, b.coordenadas) <= distancia_maxima_km
 
 
 def _completitud(poi: Poi) -> tuple[int, int]:
