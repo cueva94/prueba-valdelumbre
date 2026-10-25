@@ -4,7 +4,7 @@ Asistente turístico para Valdelumbre, un pueblo inventado. Consta de una API qu
 
 Los datos de partida (`datos/`) traen defectos deliberados: duplicados, coordenadas invertidas, campos desconocidos e incluso una instrucción maliciosa dentro de una descripción. Buena parte del trabajo consiste en tratarlos con reglas generales y comprobables, que se describen en [DATOS.md](DATOS.md). El uso de IA durante el desarrollo está en [IA.md](IA.md).
 
-> **Estado del desarrollo:** está validado el esqueleto de extremo a extremo (pantalla → proxy → API). La lógica de negocio se añade por fases. La tabla [Estado](#estado) indica qué está hecho y verificado.
+> **Estado del desarrollo:** están validados el esqueleto de extremo a extremo (pantalla → proxy → API) y la limpieza del catálogo. El resto se añade por fases. La tabla [Estado](#estado) indica qué está hecho y verificado.
 
 ## Arranque rápido
 
@@ -62,8 +62,14 @@ Los comandos del backend se ejecutan en `backend/` con el entorno virtual activa
 
 Qué cubren los tests ahora mismo:
 
-- **Backend:** que la API responde en `/health`, y que `datos/` sigue idéntico a los originales, comprobado con su huella SHA-256 (ver [DATOS.md](DATOS.md)).
+- **Backend:**
+  - Cada regla de limpieza de datos, con registros sintéticos para demostrar que es general, y su efecto sobre el catálogo real. Cada defecto de [DATOS.md](DATOS.md) enlaza con sus tests.
+  - El estado de apertura: turnos partidos, hora de cierre, días ISO, temporadas y horarios desconocidos.
+  - Que la API responde en `/health`.
+  - Que `datos/` sigue idéntico a los originales, comprobado con su huella SHA-256.
 - **Frontend:** que la pantalla muestra si la API está disponible o no, simulando la respuesta de `/api/health`.
+
+Para ver qué hace la limpieza con los datos reales, ejecuta `python -m app.catalogo` en `backend/`. Muestra los registros publicados y excluidos, y cada incidencia con su código de defecto.
 
 ## Arquitectura
 
@@ -78,8 +84,19 @@ Navegador ──► web (nginx): sirve la pantalla Angular ya compilada
                     interpretar → recuperar → generar texto
                     (plantillas deterministas; interfaz preparada para un LLM)
 
-Al arrancar (⏳ fase 1): datos/pois.json original ─► limpieza ─► catálogo + incidencias
+Limpieza (✅; la API la ejecutará al arrancar en la fase 2):
+  datos/pois.json original ─► reglas generales D1…D9 ─► catálogo publicable + incidencias
 ```
+
+La limpieza (`backend/app/catalogo/`) no depende de FastAPI:
+
+| Módulo | Responsabilidad |
+|---|---|
+| `modelos.py` | Estructuras inmutables del catálogo ya limpio. Los datos crudos solo existen dentro de `limpieza.py` |
+| `limpieza.py` | Las reglas generales; cada corrección queda registrada como incidencia con el código de DATOS.md |
+| `texto.py` | Normalización para comparar (D8) y detección de instrucciones incrustadas (D1) |
+| `horarios.py` | Estado de apertura en un momento dado: abierto, cerrado o desconocido |
+| `carga.py` | Lectura del JSON original en UTF-8 |
 
 ## Estructura del repositorio
 
@@ -88,6 +105,7 @@ Al arrancar (⏳ fase 1): datos/pois.json original ─► limpieza ─► catál
 ├── datos/                 datos originales de la prueba, sin modificar
 ├── backend/               API (Python 3.12, FastAPI)
 │   ├── app/
+│   │   └── catalogo/      carga, limpieza y horarios del catálogo
 │   ├── tests/
 │   └── Dockerfile
 ├── frontend/              pantalla (Angular 22) servida con nginx
@@ -128,7 +146,7 @@ Donde el enunciado deja margen se ha decidido lo siguiente. Si alguna decisión 
 |---|---|---|
 | Infraestructura | Docker Compose, API y pantalla mínimas, proxy | ✅ verificado |
 | Calidad | Tests, lint y formato | ✅ verificado |
-| Datos | Limpieza y normalización del catálogo | ⏳ |
+| Datos | Limpieza y normalización del catálogo, y estado de apertura | ✅ verificado |
 | Backend | `GET /pois` y `GET /pois/{id}` | ⏳ |
 | Asistente | `POST /preguntar` | ⏳ |
 | Frontend | Pantalla accesible | ⏳ |
@@ -137,4 +155,6 @@ Donde el enunciado deja margen se ha decidido lo siguiente. Si alguna decisión 
 
 ## Limitaciones conocidas y trabajo futuro
 
-Se completará al cerrar el desarrollo.
+Se completará al cerrar el desarrollo. Por ahora:
+
+- **Limpieza de datos:** la detección de instrucciones incrustadas funciona por patrones; los duplicados se detectan solo con el mismo nombre; las franjas que cruzan la medianoche se descartan. El detalle y los motivos están en [DATOS.md → Límites conocidos](DATOS.md#límites-conocidos-de-estas-reglas).

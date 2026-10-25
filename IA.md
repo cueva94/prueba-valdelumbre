@@ -44,9 +44,28 @@ Al instalar y validar aparecieron varios avisos de las herramientas. Ninguno se 
 | npm bloqueó los scripts de instalación de 4 paquetes | El build y los tests pasan sin ellos | Denegados de forma explícita (`allowScripts`), y `--ignore-scripts` en Docker |
 | El analizador del IDE (SonarQube for IDE, que no es una herramienta de IA) sugiere `<output>` en lugar de `role="status"` | — | Descartado: `role="status"` es el patrón más extendido para anunciar cambios a los lectores de pantalla, y `<output>` se anuncia de forma menos consistente en algunos. Se comprobará con NVDA en la fase de la pantalla |
 
+### Repositorio remoto
+
+- La IA propuso crear el repositorio como **privado** durante el desarrollo y hacerlo público al entregar, para que el trabajo a medias no fuera visible antes de tiempo. **Aceptado.**
+
+### Limpieza de datos
+
+**Lo que hizo la IA:** implementó las reglas acordadas en el análisis (DATOS.md, D1 a D9) y las pruebas. Antes de escribir los tests ejecutó la limpieza sobre los datos reales para comprobar su efecto.
+
+**Decisiones de detalle tomadas por la IA durante la implementación** (documentadas en DATOS.md → Límites conocidos):
+- Umbrales: 50 km para decidir si un punto está fuera del pueblo y 50 m para considerar duplicados dos registros con el mismo nombre.
+- Las franjas que cruzan la medianoche se descartan en lugar de interpretarse, porque no hay ninguna en los datos y así no se da por abierto algo que no lo está.
+- Los duplicados exigen el mismo nombre normalizado, sin similitud aproximada, para no fusionar lugares distintos.
+- Reglas preventivas (V) para registros mal formados que no aparecen en los datos actuales.
+
+**Cómo se comprobó que los tests sirven:** además de ejecutarlos (81 en verde), se introdujeron a propósito cuatro fallos en el código, uno cada vez: incluir la hora de cierre, conservar el duplicado menos completo, no detectar instrucciones dirigidas al asistente y no corregir coordenadas. Los tests detectaron los cuatro, y el código se restauró después.
+
+**Sugerencia del analizador del IDE:** partir dos `assert a and b` en asserts separados, para que un fallo indique qué condición concreta no se cumple. **Aceptada.**
+
 ### Errores de la IA detectados
 
 - **Saltos de línea:** la IA afirmó que los JSON usaban CRLF, a partir de un recuento con `grep` mal planteado. Al comprobarlo byte a byte resultó falso: son LF. Se corrigió antes de actuar sobre esa base. La regla de `.gitattributes` para `datos/` se mantuvo, pero por el motivo correcto: evitar que Git convierta los saltos de línea al clonar en Windows.
+- **Guion largo en el código:** para aclarar al linter que el guion largo (U+2013) de la expresión de precios es intencionado, la IA intentó escribirlo como secuencia de escape (barra invertida seguida de `u2013`). Dos intentos dejaron el carácter literal, porque la herramienta de edición interpretaba la secuencia. El linter lo detectó las dos veces, y se resolvió con un script que construye la secuencia sin escribirla literalmente.
 
 ## Enfoque del asistente y medidas contra respuestas sin respaldo
 
