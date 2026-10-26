@@ -1,5 +1,6 @@
-# Dependencias de desarrollo: tests, cliente HTTP de pruebas, lint y formato.
+# Dependencias de desarrollo: tests, cliente HTTP de pruebas, lint, formato y tipos.
 -r requirements.txt
 pytest==9.1.1
 httpx2==2.16.0
 ruff==0.17.2
+mypy==2.4.0

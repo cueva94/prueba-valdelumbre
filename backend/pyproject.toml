@@ -6,8 +6,23 @@ target-version = "py312"
 
 [tool.ruff.lint]
 # E/W: estilo · F: errores · I: imports · B: bugs comunes · UP: sintaxis moderna
-# SIM: simplificaciones · RUF: reglas propias de ruff
-select = ["E", "W", "F", "I", "B", "UP", "SIM", "RUF"]
+# SIM: simplificaciones · RUF: reglas propias de ruff · N: nombres (PEP 8)
+# PT: estilo de pytest · C4: comprensiones · PTH: pathlib · RET: return · PIE: código innecesario
+select = ["E", "W", "F", "I", "B", "UP", "SIM", "RUF", "N", "PT", "C4", "PTH", "RET", "PIE"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["app", "tests"]
+# Entiende los alias de Pydantic: los modelos se construyen con los nombres en inglés.
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+# Los tests no anotan cada función (fixtures y parametrize), pero su cuerpo sí se comprueba.
+module = ["tests.*"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

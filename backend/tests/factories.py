@@ -1,50 +1,51 @@
 """Registros crudos sintéticos para probar las reglas sin depender del catálogo real."""
 
 import math
-from typing import Any
+
+from app.catalog.normalization import JsonValue
 
 # Centro aproximado de los datos de la prueba; los registros sintéticos se sitúan cerca.
-LAT_PUEBLO, LON_PUEBLO = 40.417, -3.705
+TOWN_LAT, TOWN_LON = 40.417, -3.705
 
 # Con la Tierra como esfera de 6371 km de radio, un grado de latitud mide siempre lo mismo.
-KM_POR_GRADO_DE_LATITUD = 2 * math.pi * 6371.0 / 360
+KM_PER_DEGREE_OF_LATITUDE = 2 * math.pi * 6371.0 / 360
 
 
-def latitud_a(km_al_norte: float) -> float:
+def latitude_at(km_north: float) -> float:
     """Latitud del punto situado exactamente a esa distancia al norte del centro."""
-    return LAT_PUEBLO + km_al_norte / KM_POR_GRADO_DE_LATITUD
+    return TOWN_LAT + km_north / KM_PER_DEGREE_OF_LATITUDE
 
 
-def registro(**cambios: Any) -> dict[str, Any]:
-    """Un registro crudo válido y completo; `cambios` sustituye los campos indicados."""
-    base: dict[str, Any] = {
-        "id": "poi-prueba",
+def record(**changes: JsonValue) -> dict[str, JsonValue]:
+    """Un registro crudo válido y completo; `changes` sustituye los campos indicados."""
+    base: dict[str, JsonValue] = {
+        "id": "poi-test",
         "nombre": {"es": "Sitio de prueba", "en": "Test place"},
         "categoria": "museo",
         "descripcion": {"es": "Descripción del sitio.", "en": "Description of the place."},
-        "lat": LAT_PUEBLO,
-        "lon": LON_PUEBLO,
+        "lat": TOWN_LAT,
+        "lon": TOWN_LON,
         "accesible": True,
         "horario": {"always_open": True, "franjas": []},
         "precio": 0,
         "etiquetas": ["historia"],
     }
-    return base | cambios
+    return base | changes
 
 
-def vecinos() -> list[dict[str, Any]]:
-    """Cuatro registros en cruz a ~100 m del centro (LAT_PUEBLO, LON_PUEBLO).
+def neighbours() -> list[JsonValue]:
+    """Cuatro registros en cruz a ~100 m del centro (TOWN_LAT, TOWN_LON).
 
     Con ellos, la mediana del catálogo es exactamente el centro aunque se añada un quinto
     punto en cualquier sitio: permite situar ese punto a una distancia exacta del centro.
     """
-    desplazamientos = [(0.001, 0.0), (-0.001, 0.0), (0.0, 0.001), (0.0, -0.001)]
+    offsets = [(0.001, 0.0), (-0.001, 0.0), (0.0, 0.001), (0.0, -0.001)]
     return [
-        registro(
-            id=f"poi-vecino-{i}",
+        record(
+            id=f"poi-neighbour-{i}",
             nombre={"es": f"Vecino {i}", "en": f"Neighbour {i}"},
-            lat=LAT_PUEBLO + d_lat,
-            lon=LON_PUEBLO + d_lon,
+            lat=TOWN_LAT + d_lat,
+            lon=TOWN_LON + d_lon,
         )
-        for i, (d_lat, d_lon) in enumerate(desplazamientos)
+        for i, (d_lat, d_lon) in enumerate(offsets)
     ]
