@@ -1,0 +1,163 @@
+[
+  {
+    "id": "p01",
+    "idioma": "es",
+    "pregunta": "¿Qué museos puedo visitar en silla de ruedas?",
+    "esperado_incluye": ["poi-003", "poi-015"],
+    "esperado_excluye": ["poi-013", "poi-004"]
+  },
+  {
+    "id": "p02",
+    "idioma": "en",
+    "pregunta": "Which museums are wheelchair accessible?",
+    "esperado_incluye": ["poi-003", "poi-015"],
+    "esperado_excluye": ["poi-013"]
+  },
+  {
+    "id": "p03",
+    "idioma": "en",
+    "pregunta": "Where can I taste local wine?",
+    "esperado_incluye": ["poi-008"],
+    "esperado_excluye": ["poi-009"]
+  },
+  {
+    "id": "p04",
+    "idioma": "es",
+    "pregunta": "¿Hay alguna bodega?",
+    "esperado_incluye": ["poi-008"],
+    "esperado_excluye": []
+  },
+  {
+    "id": "p05",
+    "idioma": "es",
+    "pregunta": "Planes al aire libre para ir con niños",
+    "esperado_incluye": ["poi-007", "poi-012"],
+    "esperado_excluye": ["poi-003", "poi-015"]
+  },
+  {
+    "id": "p06",
+    "idioma": "en",
+    "pregunta": "What is open on Monday at 12:00?",
+    "esperado_incluye": ["poi-001", "poi-006", "poi-010", "poi-002", "poi-005"],
+    "esperado_excluye": ["poi-003", "poi-015", "poi-008"]
+  },
+  {
+    "id": "p07",
+    "idioma": "es",
+    "pregunta": "¿Qué hay abierto el domingo a las 18:30?",
+    "esperado_incluye": ["poi-008"],
+    "esperado_excluye": ["poi-001", "poi-003", "poi-010", "poi-014", "poi-018"]
+  },
+  {
+    "id": "p08",
+    "idioma": "es",
+    "pregunta": "¿Dónde puedo comer?",
+    "esperado_incluye": ["poi-009"],
+    "esperado_excluye": ["poi-003"]
+  },
+  {
+    "id": "p09",
+    "idioma": "es",
+    "pregunta": "¿Hay farmacia?",
+    "esperado_incluye": ["poi-016"],
+    "esperado_excluye": []
+  },
+  {
+    "id": "p10",
+    "idioma": "es",
+    "pregunta": "¿Hay algún parque acuático?",
+    "esperado_incluye": [],
+    "esperado_excluye": []
+  },
+  {
+    "id": "p11",
+    "idioma": "en",
+    "pregunta": "Is there a zip line?",
+    "esperado_incluye": [],
+    "esperado_excluye": []
+  },
+  {
+    "id": "p12",
+    "idioma": "es",
+    "pregunta": "¿Cuál es el único museo accesible?",
+    "esperado_incluye": ["poi-003", "poi-015"],
+    "esperado_excluye": ["poi-013"]
+  },
+  {
+    "id": "p13",
+    "idioma": "en",
+    "pregunta": "Is the castle accessible?",
+    "esperado_incluye": ["poi-001"],
+    "esperado_excluye": []
+  },
+  {
+    "id": "p14",
+    "idioma": "es",
+    "pregunta": "Museos accesibles abiertos el lunes a las 12:00",
+    "esperado_incluye": [],
+    "esperado_excluye": ["poi-003", "poi-013", "poi-015"]
+  },
+  {
+    "id": "p15",
+    "idioma": "es",
+    "pregunta": "¿Qué puedo hacer gratis con niños?",
+    "esperado_incluye": ["poi-003", "poi-007", "poi-012", "poi-015"],
+    "esperado_excluye": []
+  },
+  {
+    "id": "p16",
+    "idioma": "es",
+    "pregunta": "¿Es accesible el Puente Romano?",
+    "esperado_incluye": ["poi-011"],
+    "esperado_excluye": []
+  },
+  {
+    "id": "p17",
+    "idioma": "es",
+    "pregunta": "¿Está abierta la ermita?",
+    "esperado_incluye": ["poi-018"],
+    "esperado_excluye": ["poi-006"]
+  },
+  {
+    "id": "p18",
+    "idioma": "es",
+    "pregunta": "Quiero ver el atardecer",
+    "esperado_incluye": ["poi-002"],
+    "esperado_excluye": []
+  },
+  {
+    "id": "p19",
+    "idioma": "en",
+    "pregunta": "Free museums",
+    "esperado_incluye": ["poi-003", "poi-015"],
+    "esperado_excluye": ["poi-013"]
+  },
+  {
+    "id": "p20",
+    "idioma": "es",
+    "pregunta": "¿Algún sitio para bañarse?",
+    "esperado_incluye": ["poi-014"],
+    "esperado_excluye": []
+  },
+  {
+    "id": "p21",
+    "idioma": "es",
+    "pregunta": "¿Qué museos tienen tirolina?",
+    "esperado_incluye": [],
+    "esperado_excluye": ["poi-003", "poi-013", "poi-015"]
+  },
+  {
+    "id": "p22",
+    "idioma": "es",
+    "pregunta": "Museos con ascensor",
+    "esperado_incluye": ["poi-003"],
+    "esperado_excluye": ["poi-013", "poi-015"]
+  },
+  {
+    "id": "p23",
+    "idioma": "en",
+    "pregunta": "Museums with a zip line",
+    "esperado_incluye": [],
+    "esperado_excluye": []
+  }
+]
