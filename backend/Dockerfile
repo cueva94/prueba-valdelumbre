@@ -7,13 +7,15 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
-WORKDIR /srv
+# Misma estructura que el repositorio (backend/ y datos/ como hermanos), para que las rutas
+# por defecto de app/config.py sirvan igual dentro y fuera del contenedor.
+WORKDIR /srv/backend
 
 COPY backend/requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY backend/app ./app
-COPY datos ./datos
+COPY datos /srv/datos
 
 # Sin privilegios de root en ejecución.
 RUN useradd --create-home --uid 10001 api

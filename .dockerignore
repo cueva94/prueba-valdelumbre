@@ -3,5 +3,6 @@
 *
 !backend/requirements.txt
 !backend/app/
-!datos/
+!datos/pois.json
+!datos/evaluacion.json
 **/__pycache__
