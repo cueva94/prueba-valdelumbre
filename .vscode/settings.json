@@ -1,0 +1,36 @@
+{
+  // Lint y formato al guardar, con las mismas reglas que los comandos del README:
+  // backend/pyproject.toml (Ruff), frontend/eslint.config.js (ESLint) y frontend/.prettierrc.
+  // JSON queda fuera a propósito: los datos originales (datos/*.json) no se reescriben nunca.
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit",
+      "source.organizeImports.ruff": "explicit"
+    }
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    }
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    }
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  // Prettier solo actúa donde hay configuración (frontend/), nunca con sus valores por defecto.
+  "prettier.requireConfig": true,
+  // La configuración de ESLint y sus dependencias están en frontend/, no en la raíz.
+  "eslint.workingDirectories": ["./frontend"],
+  "eslint.validate": ["typescript", "html"]
+}

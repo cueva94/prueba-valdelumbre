@@ -35,7 +35,10 @@ pnpm-debug.log*
 *.p12
 
 # --- Editores y herramientas ---
-.vscode/
+# De VS Code solo se comparten la configuración de lint/formato y las extensiones recomendadas.
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 .idea/
 *.swp
 .claude/settings.local.json

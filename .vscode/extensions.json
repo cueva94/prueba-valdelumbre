@@ -1,0 +1,11 @@
+{
+  // VS Code las propone al abrir la carpeta del repositorio.
+  "recommendations": [
+    "ms-python.python",
+    "charliermarsh.ruff",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "angular.ng-template",
+    "editorconfig.editorconfig"
+  ]
+}
