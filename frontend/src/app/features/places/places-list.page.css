@@ -1,0 +1,159 @@
+.intro {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.intro__icon {
+  color: var(--vl-accent);
+}
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--vl-surface);
+  border: 1px solid var(--vl-line);
+  border-radius: 18px;
+}
+
+.filters__categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.filters__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  align-items: flex-end;
+  padding-top: 14px;
+  border-top: 1px solid var(--vl-line-soft);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 200px;
+}
+
+.field--hour {
+  min-width: 110px;
+}
+
+.field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vl-ink-2);
+}
+
+.field select {
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--vl-line-strong);
+  border-radius: 10px;
+  background: var(--vl-surface);
+  color: var(--vl-ink);
+  font: inherit;
+  font-size: 15px;
+}
+
+.field select:disabled {
+  background: var(--vl-ground);
+  color: var(--vl-ink-3);
+}
+
+.filters__summary {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+}
+
+.filters__count {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.split {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.results {
+  position: relative;
+  flex: 1 1 380px;
+  min-width: 0;
+  max-width: 100%;
+  height: 680px;
+  margin: 0;
+  padding: 2px 6px 2px 2px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.results > li {
+  flex: none;
+  display: flex;
+}
+
+.results > li > app-poi-card {
+  flex: 1;
+}
+
+.split__map {
+  flex: 2 1 560px;
+  min-width: 0;
+  height: 680px;
+}
+
+.skeleton-card {
+  height: 132px;
+  border-radius: var(--vl-radius-card);
+  background: var(--vl-surface);
+  border: 1px solid var(--vl-line-soft);
+}
+
+@media (max-width: 720px) {
+  .field {
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+
+  .field--hour {
+    flex-basis: 100%;
+  }
+
+  .filters__summary {
+    margin-left: 0;
+  }
+
+  /* En móvil, la lista ocupa su altura natural y el mapa va debajo. */
+  .results {
+    height: auto;
+    overflow-y: visible;
+    padding: 0;
+  }
+
+  .split__map {
+    flex-basis: 100%;
+    height: 440px;
+  }
+}

@@ -1,0 +1,165 @@
+<div class="page page--narrow">
+  <section class="panel ask-panel" aria-labelledby="ask-title">
+    <div class="ask-panel__intro">
+      <span class="ask-panel__icon" aria-hidden="true">
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.9"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          focusable="false"
+        >
+          <path d="M4 5h16v11H9l-5 4z" />
+        </svg>
+      </span>
+      <div>
+        <h1 id="ask-title" class="ask-panel__title">{{ 'assistant.title' | translate }}</h1>
+        <p class="ask-panel__lead">{{ 'assistant.lead' | translate }}</p>
+      </div>
+    </div>
+    <app-ask-box
+      [label]="'assistant.askLabel' | translate"
+      [placeholder]="'assistant.askPlaceholder' | translate"
+      [showLabel]="false"
+      [topics]="topics"
+      [(value)]="draft"
+      (submitted)="ask($event)"
+    />
+  </section>
+
+  <div class="conversation" aria-live="polite">
+    @if (!question()) {
+      <section class="welcome" aria-labelledby="welcome-title">
+        <span class="welcome__icon" aria-hidden="true">
+          <svg
+            width="26"
+            height="26"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            focusable="false"
+          >
+            <path d="M4 5h16v11H9l-5 4z" />
+          </svg>
+        </span>
+        <h2 id="welcome-title" class="welcome__title">
+          {{ 'assistant.welcomeTitle' | translate }}
+        </h2>
+        <p class="welcome__text">{{ 'assistant.welcomeText' | translate }}</p>
+        <p id="starters-title" class="welcome__starters-title">
+          {{ 'assistant.starters' | translate }}
+        </p>
+        <ul class="starters" aria-labelledby="starters-title">
+          @for (starter of starters; track starter) {
+            <li>
+              <button type="button" class="starter" (click)="askExample(starter)">
+                {{ starter | translate }}
+                <svg
+                  class="starter__arrow"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </button>
+            </li>
+          }
+        </ul>
+      </section>
+    } @else {
+      <article
+        class="panel answer"
+        aria-labelledby="answer-question"
+        [attr.aria-busy]="answer.isLoading()"
+      >
+        <header class="answer__header">
+          <p class="answer__eyebrow">{{ 'assistant.yourQuestion' | translate }}</p>
+          <h2 id="answer-question" class="answer__question">{{ question() }}</h2>
+        </header>
+
+        <div class="answer__body">
+          @if (answer.isLoading()) {
+            <p class="answer__status" role="status">{{ 'assistant.loading' | translate }}</p>
+            <div class="skeleton" aria-hidden="true">
+              <span class="skeleton__line"></span>
+              <span class="skeleton__line skeleton__line--short"></span>
+              <span class="skeleton__cards"><span></span><span></span><span></span></span>
+            </div>
+          } @else if (answer.error()) {
+            <div class="answer__error" role="alert">
+              <p class="answer__error-title">{{ 'assistant.errorTitle' | translate }}</p>
+              <p>{{ 'assistant.errorText' | translate }}</p>
+              <div class="answer__actions">
+                <button type="button" class="vl-btn vl-btn--primary" (click)="answer.reload()">
+                  {{ 'common.retry' | translate }}
+                </button>
+                <a class="vl-btn vl-btn--outline" routerLink="/explorar">{{
+                  'assistant.seePlaces' | translate
+                }}</a>
+              </div>
+            </div>
+          } @else if (answer.hasValue()) {
+            @let response = answer.value();
+            <div
+              class="answer__text"
+              [class.answer__text--no-match]="!grounded()"
+              [attr.lang]="response.idioma"
+            >
+              @for (block of blocks(); track $index) {
+                @if (block.kind === 'list') {
+                  <ul>
+                    @for (item of block.items; track $index) {
+                      <li>{{ item }}</li>
+                    }
+                  </ul>
+                } @else {
+                  <p>{{ block.text }}</p>
+                }
+              }
+            </div>
+
+            @if (grounded()) {
+              <ul class="cited" [attr.aria-label]="'assistant.cited' | translate">
+                @for (poi of response.pois; track poi.id) {
+                  <li><app-poi-card [poi]="poi" variant="cited" /></li>
+                }
+              </ul>
+              <footer class="answer__footer">
+                <a class="vl-btn vl-btn--link" routerLink="/explorar">{{
+                  'common.seeAllPlaces' | translate
+                }}</a>
+              </footer>
+            } @else {
+              <div class="answer__suggest">
+                <p class="answer__suggest-title">{{ 'assistant.suggestTitle' | translate }}</p>
+                <div class="answer__actions">
+                  <a class="vl-chip" routerLink="/explorar">{{
+                    'assistant.allCategories' | translate
+                  }}</a>
+                  <button type="button" class="vl-chip" (click)="askExample(starters[0])">
+                    {{ starters[0] | translate }}
+                  </button>
+                </div>
+              </div>
+            }
+          }
+        </div>
+      </article>
+    }
+  </div>
+</div>

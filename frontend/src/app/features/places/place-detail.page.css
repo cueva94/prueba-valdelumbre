@@ -1,0 +1,487 @@
+.breadcrumb ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  font-size: 14px;
+  color: var(--vl-ink-3);
+}
+
+.breadcrumb a {
+  color: var(--vl-ink-2);
+  font-weight: 600;
+}
+
+.place {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 36px;
+  border-radius: 24px;
+}
+
+.hero__badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.chip-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: var(--vl-radius-chip);
+  background: var(--vl-accent-soft);
+  color: var(--vl-accent);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.hero__title {
+  margin: 0;
+  font-size: clamp(30px, 5vw, 42px);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+}
+
+.hero__lead {
+  margin: 0;
+  max-width: 680px;
+  font-size: 19px;
+  line-height: 1.6;
+  color: var(--vl-ink-2);
+}
+
+/* Abierto o cerrado ahora: lo dice el backend. */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: var(--vl-radius-chip);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.status__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  background: currentColor;
+}
+
+.status--open {
+  background: var(--vl-ok-bg);
+  color: var(--vl-ok-fg);
+}
+
+.status--closed {
+  background: var(--vl-err-bg);
+  color: var(--vl-err-fg);
+}
+
+.status--unconfirmed {
+  border: 1px dashed var(--vl-unknown);
+  color: var(--vl-ink-3);
+}
+
+.tags {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tags__item {
+  padding: 3px 10px;
+  border: 1px solid var(--vl-line);
+  border-radius: var(--vl-radius-chip);
+  background: var(--vl-ground);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vl-ink-2);
+}
+
+/* Datos clave: lo primero que se mira antes de ir, cada uno en su caja. */
+.facts {
+  margin: 4px 0 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* El icono va dentro del <dt> (en un <dl> no caben otros elementos) y se sitúa a la izquierda. */
+.fact {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  min-height: 76px;
+  padding: 14px 16px 14px 72px;
+  box-sizing: border-box;
+  border: 1px solid var(--vl-line-soft);
+  border-radius: var(--vl-radius-card);
+  background: var(--vl-ground);
+}
+
+.fact__icon {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--vl-surface);
+  box-shadow: 0 1px 2px rgb(14 28 43 / 8%);
+  color: var(--vl-accent);
+  transform: translateY(-50%);
+}
+
+.fact__label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--vl-ink-3);
+}
+
+.fact__value {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+}
+
+.fact__range {
+  white-space: nowrap;
+}
+
+.fact__note {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vl-warn-fg);
+}
+
+@media (max-width: 900px) {
+  .facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fact--today {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.ask-here {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 24px;
+  border-top: 1px solid var(--vl-line-soft);
+}
+
+.ask-here app-ask-box {
+  max-width: 820px;
+}
+
+.ask-here__title {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.ask-here__icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--vl-accent-soft);
+  color: var(--vl-accent);
+}
+
+.quick {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.practical {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.practical__title {
+  margin: 8px 0 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/*
+ * Horario y mapa, uno al lado del otro y a la misma altura; la temporada, si la hay, debajo a
+ * todo el ancho.
+ */
+.practical__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.info {
+  padding: 24px;
+}
+
+.info--wide {
+  grid-column: 1 / -1;
+}
+
+.info--map {
+  display: flex;
+  flex-direction: column;
+}
+
+.place-map {
+  flex: 1;
+  min-height: 320px;
+}
+
+/* La caja del horario mide lo mismo que la del mapa: la tabla o el aviso ocupan todo el hueco. */
+.info--hours {
+  display: flex;
+  flex-direction: column;
+}
+
+.hours-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 28px 24px;
+  border: 1px dashed var(--vl-line);
+  border-radius: var(--vl-radius-card);
+  background: var(--vl-ground);
+  text-align: center;
+}
+
+.hours-state__icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 4px;
+  border-radius: 16px;
+  background: var(--vl-surface);
+  box-shadow: 0 1px 2px rgb(14 28 43 / 8%);
+  color: var(--vl-ink-3);
+}
+
+.hours-state__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.hours-state__text {
+  margin: 0;
+  max-width: 340px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--vl-ink-2);
+}
+
+.hours-state__action {
+  margin-top: 8px;
+}
+
+/* Mismo fondo que las demás cajas; el borde discontinuo queda para cuando falta el horario. */
+.hours-state--open {
+  border-style: solid;
+  border-color: var(--vl-line-soft);
+}
+
+.hours-state--open .hours-state__icon {
+  color: var(--vl-ok-fg);
+}
+
+.info__title {
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.info__title svg {
+  color: var(--vl-accent);
+}
+
+.info__value {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.info__value + .info__value {
+  margin-top: 4px;
+}
+
+.info__note {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--vl-ink-3);
+}
+
+.is-unknown {
+  color: var(--vl-ink-3);
+}
+
+.hours {
+  flex: 1;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.hours th {
+  padding: 9px 10px;
+  text-align: left;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.hours td {
+  padding: 9px 10px;
+  text-align: right;
+}
+
+.hours__open {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Si no cabe, la línea se parte entre tramos («… y»), nunca dentro de uno. */
+.hours__range {
+  white-space: nowrap;
+}
+
+.hours tr.is-today {
+  background: var(--vl-accent-soft);
+}
+
+.hours tr.is-today th {
+  font-weight: 700;
+  border-radius: 8px 0 0 8px;
+}
+
+.hours tr.is-today td {
+  border-radius: 0 8px 8px 0;
+}
+
+.hours__today {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--vl-accent);
+}
+
+.months {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.months li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.months__bar {
+  display: block;
+  width: 100%;
+  height: 10px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  background: var(--vl-line-soft);
+}
+
+.months__bar.is-on {
+  background: var(--vl-accent);
+}
+
+.months__initial {
+  font-size: 12px;
+  color: var(--vl-ink-3);
+}
+
+.months__initial.is-on {
+  font-weight: 700;
+  color: var(--vl-ink);
+}
+
+.loading {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--vl-ink-2);
+}
+
+.skeleton-hero {
+  height: 280px;
+  border-radius: 24px;
+}
+
+@media (max-width: 720px) {
+  .hero {
+    padding: 24px 20px;
+  }
+
+  .hero__lead {
+    font-size: 17px;
+  }
+
+  .practical__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

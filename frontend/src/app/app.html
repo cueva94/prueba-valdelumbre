@@ -1,4 +1,8 @@
-<main>
-  <h1>Valdelumbre · Asistente turístico</h1>
-  <p role="status">Estado de la API: {{ estadoApi() }}</p>
+<button type="button" class="skip-link" (click)="skipToContent()">
+  {{ 'app.skipToContent' | translate }}
+</button>
+<app-header />
+<main #main id="contenido" class="main" tabindex="-1">
+  <router-outlet />
 </main>
+<app-footer />

@@ -1,0 +1,146 @@
+/* Cabecera oscura, como el pie: la tinta de la marca enmarca todas las pantallas. */
+.header {
+  background: var(--vl-ink);
+  color: var(--vl-footer-text);
+}
+
+/* El anillo de foco global es azul y no contrasta sobre este fondo. */
+.header :focus-visible {
+  outline-color: var(--vl-surface);
+}
+
+.header__inner {
+  max-width: var(--vl-page-wide);
+  margin: 0 auto;
+  padding: 12px 24px;
+  min-height: 72px;
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 32px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--vl-surface);
+  text-decoration: none;
+}
+
+.brand__mark {
+  fill: var(--vl-accent);
+}
+
+.brand__name {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.brand__tagline {
+  padding-left: 10px;
+  border-left: 1px solid var(--vl-footer-line);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--vl-footer-muted);
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.nav a {
+  padding: 10px 16px;
+  border-radius: 10px;
+  color: var(--vl-footer-text);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.nav a:hover {
+  background: var(--vl-header-hover);
+  color: var(--vl-surface);
+}
+
+.nav a.is-active {
+  background: var(--vl-accent);
+  color: var(--vl-surface);
+}
+
+/* Selector ES | EN: el idioma activo, en blanco sobre la tinta. */
+.language {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--vl-footer-line);
+  border-radius: 12px;
+}
+
+.language__option {
+  min-width: 44px;
+  min-height: 38px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--vl-footer-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.language__option:hover {
+  background: var(--vl-header-hover);
+  color: var(--vl-surface);
+}
+
+.language__option[aria-pressed='true'] {
+  background: var(--vl-surface);
+  color: var(--vl-ink);
+}
+
+/* En móvil, la navegación pasa a una fila de pestañas bajo el logo. */
+@media (max-width: 720px) {
+  .header__inner {
+    padding: 10px 16px 0;
+    gap: 8px 16px;
+  }
+
+  .brand__tagline {
+    display: none;
+  }
+
+  .language {
+    margin-left: auto;
+  }
+
+  .nav {
+    order: 3;
+    flex: 1 0 100%;
+    margin: 0 -16px;
+    padding: 0 8px;
+    gap: 0;
+    border-top: 1px solid var(--vl-footer-line);
+  }
+
+  .nav a {
+    flex: 1;
+    padding: 12px 8px;
+    border-radius: 0;
+    text-align: center;
+    border-bottom: 3px solid transparent;
+  }
+
+  /* El azul de la marca no contrasta lo bastante con la tinta para marcar la pestaña. */
+  .nav a.is-active {
+    background: transparent;
+    border-bottom-color: var(--vl-surface);
+  }
+}

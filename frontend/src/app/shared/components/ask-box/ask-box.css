@@ -1,0 +1,135 @@
+.ask {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ask__label {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.ask__field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px 6px 18px;
+  background: var(--vl-surface);
+  border: 1.5px solid var(--vl-line-strong);
+  border-radius: var(--vl-radius-card);
+  box-shadow: 0 1px 2px rgb(14 28 43 / 5%);
+}
+
+/* El contorno de foco lo lleva el campo completo, no solo el input. */
+.ask__field:has(input:focus-visible) {
+  border-color: var(--vl-accent);
+  outline: 3px solid var(--vl-accent);
+  outline-offset: 2px;
+}
+
+.ask__field.is-invalid {
+  border-color: var(--vl-err-fg);
+}
+
+.ask__icon {
+  flex: none;
+  color: var(--vl-ink-3);
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  border: 0;
+  background: transparent;
+  color: var(--vl-ink);
+  font: inherit;
+  font-size: 17px;
+}
+
+input:focus-visible {
+  outline: none;
+}
+
+input::placeholder {
+  color: var(--vl-ink-3);
+}
+
+.ask__field .vl-btn {
+  min-height: 48px;
+  padding: 0 22px;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+/* Vacío se envía igualmente para mostrar el error: solo se atenúa. */
+.ask__field .vl-btn.is-empty {
+  background: #e7ebf0;
+  color: var(--vl-ink-2);
+}
+
+.ask__help {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 18px;
+  font-size: 13px;
+  color: var(--vl-ink-3);
+}
+
+.ask__error {
+  color: var(--vl-err-fg);
+  font-weight: 600;
+}
+
+.ask__count {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.ask__topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.ask--compact .ask__field {
+  padding: 6px 6px 6px 16px;
+  border-radius: 14px;
+}
+
+.ask--compact input {
+  min-height: 44px;
+  font-size: 16px;
+}
+
+.ask--compact .ask__field .vl-btn {
+  min-height: 44px;
+  padding: 0 18px;
+  font-size: 15px;
+}
+
+@media (max-width: 520px) {
+  .ask__field {
+    flex-wrap: wrap;
+    padding: 8px;
+  }
+
+  input {
+    flex-basis: 100%;
+    padding: 0 8px;
+  }
+
+  .ask__icon {
+    display: none;
+  }
+
+  .ask__field .vl-btn {
+    flex: 1;
+    justify-content: center;
+  }
+}

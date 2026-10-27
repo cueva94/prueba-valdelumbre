@@ -1,0 +1,195 @@
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero__inner panel">
+    <p class="hero__count">
+      <span class="hero__dot" aria-hidden="true"></span>
+      @if (placeCount() !== null) {
+        {{
+          (placeCount() === 1 ? 'home.count.one' : 'home.count.other')
+            | translate: { count: placeCount() }
+        }}
+      } @else {
+        {{ 'home.countLoading' | translate }}
+      }
+    </p>
+    <h1 id="hero-title" class="hero__title">{{ 'home.title' | translate }}</h1>
+    <p class="hero__lead">{{ 'home.lead' | translate }}</p>
+    <app-ask-box
+      [label]="'common.askAssistant' | translate"
+      [placeholder]="'home.askPlaceholder' | translate"
+      (submitted)="ask($event)"
+    />
+    <div class="examples">
+      <p id="examples-title" class="examples__title">{{ 'home.examples' | translate }}</p>
+      <ul class="examples__list" aria-labelledby="examples-title">
+        @for (example of examples; track example) {
+          <li>
+            <a
+              class="vl-chip vl-chip--large"
+              routerLink="/asistente"
+              [queryParams]="{ q: example | translate }"
+              >{{ example | translate }}</a
+            >
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="categories-title">
+  <div class="section__head">
+    <div>
+      <h2 id="categories-title" class="section__title">
+        {{ 'home.categoriesTitle' | translate }}
+      </h2>
+      <p class="section__lead">
+        @if (placeCount() !== null) {
+          {{
+            'home.categoriesLead'
+              | translate: { categories: categories().length, places: placeCount() }
+          }}
+        } @else {
+          {{ 'home.categoriesLeadLoading' | translate }}
+        }
+      </p>
+    </div>
+    <a class="vl-btn vl-btn--link" routerLink="/explorar">
+      {{ 'common.seeAllPlaces' | translate }}
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
+    </a>
+  </div>
+  <ul class="categories__grid">
+    @for (category of categories(); track category.id) {
+      <li>
+        <a class="category" routerLink="/explorar" [queryParams]="{ category: category.id }">
+          <span class="category__icon"><app-category-icon [category]="category.id" /></span>
+          <span>
+            <span class="category__name">{{ category.pluralKey | translate }}</span>
+            @if (category.count !== null) {
+              <span class="category__count">{{
+                (category.count === 1 ? 'common.places.one' : 'common.places.other')
+                  | translate: { count: category.count }
+              }}</span>
+            }
+          </span>
+        </a>
+      </li>
+    }
+  </ul>
+</section>
+
+<section class="section section--map" aria-labelledby="map-title">
+  <div class="section__head">
+    <div>
+      <h2 id="map-title" class="section__title">{{ 'home.mapTitle' | translate }}</h2>
+      <p class="section__lead">{{ 'home.mapLead' | translate }}</p>
+    </div>
+  </div>
+
+  @if (catalog.error()) {
+    <app-state-panel
+      tone="error"
+      [heading]="'common.placesLoadError' | translate"
+      [message]="'common.checkConnection' | translate"
+    >
+      <button type="button" class="vl-btn vl-btn--primary" (click)="places.reload()">
+        {{ 'common.retry' | translate }}
+      </button>
+    </app-state-panel>
+  } @else {
+    <fieldset class="map-filters">
+      <legend class="visually-hidden">{{ 'home.mapFilter' | translate }}</legend>
+      <button
+        type="button"
+        class="vl-chip vl-chip--filter"
+        [attr.aria-pressed]="!mapCategory()"
+        (click)="mapCategory.set(null)"
+      >
+        {{ 'home.mapAll' | translate }}
+        @if (placeCount() !== null) {
+          <span class="vl-chip__count">{{ placeCount() }}</span>
+        }
+      </button>
+      @for (category of categories(); track category.id) {
+        <button
+          type="button"
+          class="vl-chip vl-chip--filter"
+          [attr.aria-pressed]="mapCategory() === category.id"
+          (click)="mapCategory.set(category.id)"
+        >
+          {{ category.pluralKey | translate }}
+          @if (category.count !== null) {
+            <span class="vl-chip__count">{{ category.count }}</span>
+          }
+        </button>
+      }
+    </fieldset>
+
+    <app-poi-map
+      class="home-map"
+      [pois]="mapPois()"
+      [frame]="catalogPois()"
+      [selectedId]="activeId()"
+      (selectedChange)="onMapSelection($event)"
+    />
+
+    <div class="places__head">
+      <h3 id="places-title" class="places__title" aria-live="polite">{{ listTitle() }}</h3>
+      <a
+        class="vl-btn vl-btn--link"
+        routerLink="/explorar"
+        [queryParams]="mapCategory() ? { category: mapCategory() } : {}"
+      >
+        {{ 'home.filterLink' | translate }}
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d="M5 12h14M13 6l6 6-6 6" />
+        </svg>
+      </a>
+    </div>
+    <ul class="places" aria-labelledby="places-title">
+      @for (poi of visiblePlaces(); track poi.id) {
+        <li #placeItem tabindex="-1">
+          <app-poi-card
+            [poi]="poi"
+            [headingLevel]="4"
+            [selected]="poi.id === activeId()"
+            [locatable]="true"
+            (locate)="locate($event)"
+          />
+        </li>
+      }
+    </ul>
+    @if (hasMorePlaces()) {
+      <div class="places__more">
+        <button type="button" class="vl-btn vl-btn--outline-strong" (click)="showMorePlaces()">
+          {{ 'home.loadMore' | translate
+          }}<span class="visually-hidden">{{ 'home.loadMoreHidden' | translate }}</span>
+        </button>
+      </div>
+    }
+  }
+</section>

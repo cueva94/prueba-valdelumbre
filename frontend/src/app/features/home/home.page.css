@@ -1,0 +1,282 @@
+/* Como en el resto de pantallas: el fondo de la página y el contenido en una caja blanca. */
+.hero {
+  max-width: var(--vl-page);
+  margin: 0 auto;
+  padding: 28px 24px 0;
+  box-sizing: border-box;
+}
+
+.hero__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 44px;
+  border-radius: 24px;
+}
+
+.hero__inner > * {
+  max-width: 780px;
+}
+
+.hero__count {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--vl-ink-2);
+}
+
+.hero__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--vl-accent);
+}
+
+.hero__title {
+  margin: 0;
+  font-size: clamp(32px, 6vw, 46px);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+}
+
+.hero__lead {
+  margin: 0;
+  max-width: 640px;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--vl-ink-2);
+}
+
+.examples {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.examples__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--vl-ink-3);
+}
+
+.examples__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.section {
+  max-width: var(--vl-page);
+  margin: 0 auto;
+  padding: 56px 24px 72px;
+  box-sizing: border-box;
+}
+
+.section__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-bottom: 24px;
+}
+
+.section__title {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: -0.015em;
+  font-weight: 700;
+}
+
+.section__lead {
+  margin: 6px 0 0;
+  font-size: 16px;
+  color: var(--vl-ink-2);
+}
+
+.section--map {
+  padding-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section--map .section__head {
+  margin-bottom: 0;
+}
+
+.map-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.home-map {
+  height: 560px;
+}
+
+.places__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin-top: 16px;
+}
+
+.places__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.places {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(330px, 100%), 1fr));
+  gap: 14px;
+}
+
+.places > li {
+  display: flex;
+}
+
+.places > li > app-poi-card {
+  flex: 1;
+}
+
+/* Recibe el foco tras «Cargar más»: el anillo sigue la forma de la tarjeta. */
+.places > li:focus-visible {
+  outline-offset: 2px;
+  border-radius: var(--vl-radius-card);
+}
+
+.places__more {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+/* Todas las categorías en una fila; si no caben (tablet, móvil), la fila se desplaza en horizontal.
+   El relleno deja sitio al anillo de foco, que si no quedaría recortado por el scroll. */
+.categories__grid {
+  margin: -6px;
+  padding: 6px;
+  list-style: none;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(128px, 1fr);
+  gap: 12px;
+  overflow-x: auto;
+}
+
+.categories__grid > li {
+  display: flex;
+}
+
+.category {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 14px;
+  hyphens: auto;
+  background: var(--vl-surface);
+  border: 1px solid var(--vl-line);
+  border-radius: var(--vl-radius-card);
+  color: var(--vl-ink);
+  text-decoration: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.category:hover {
+  border-color: var(--vl-unknown);
+  box-shadow: 0 6px 20px rgb(14 28 43 / 7%);
+}
+
+.category__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--vl-accent-soft);
+  color: var(--vl-accent);
+}
+
+.category__name {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.category__count {
+  display: block;
+  margin-top: 2px;
+  font-size: 14px;
+  color: var(--vl-ink-3);
+}
+
+@media (max-width: 720px) {
+  .hero {
+    padding: 20px 16px 0;
+  }
+
+  .hero__inner {
+    padding: 24px;
+  }
+
+  .hero__lead {
+    font-size: 17px;
+  }
+
+  .section {
+    padding: 40px 16px 56px;
+  }
+
+  .section--map {
+    padding-top: 0;
+  }
+
+  .section__title {
+    font-size: 24px;
+  }
+
+  /* En móvil, las categorías y los chips del mapa llegan hasta el borde de la pantalla. */
+  .categories__grid {
+    margin: -6px -16px;
+    padding: 6px 16px;
+  }
+
+  /* Los chips del mapa, en una fila con scroll horizontal (con sitio para el anillo de foco). */
+  .map-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin: 0 -16px;
+    padding: 6px 16px;
+  }
+
+  .map-filters > button {
+    flex: none;
+  }
+
+  .home-map {
+    height: 440px;
+  }
+}

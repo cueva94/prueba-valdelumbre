@@ -1,0 +1,280 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* El mapa ocupa el alto que deja libre la lista de lugares sin ubicación, si la hay.
+   Sin overflow: hidden, para que el popover pueda sobresalir si el mapa es bajo (móvil). */
+.map {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 320px;
+  border: 1px solid var(--vl-line);
+  border-radius: var(--vl-radius-panel);
+  background: var(--vl-map-land);
+}
+
+.map__ground {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+}
+
+.map__ground rect {
+  fill: var(--vl-map-land);
+}
+
+/* Trazos en píxeles de pantalla, aunque el fondo se estire con el mapa. */
+.map__ground * {
+  vector-effect: non-scaling-stroke;
+}
+
+.map__grid {
+  fill: none;
+  stroke: var(--vl-map-hills);
+  stroke-width: 1;
+}
+
+.ground__hills {
+  fill: var(--vl-map-hills);
+}
+
+.ground__contour {
+  fill: none;
+  stroke: var(--vl-map-contour);
+  stroke-width: 1.2;
+}
+
+.ground__woods {
+  fill: var(--vl-map-woods);
+}
+
+.ground__fields {
+  fill: none;
+  stroke: var(--vl-map-fields);
+  stroke-width: 2;
+}
+
+.ground__river {
+  fill: none;
+  stroke: var(--vl-map-river);
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+
+.ground__water {
+  fill: var(--vl-map-water);
+  stroke: var(--vl-map-water-line);
+  stroke-width: 1.5;
+}
+
+.ground__road-edge {
+  fill: none;
+  stroke: var(--vl-map-road-edge);
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+
+.ground__road {
+  fill: none;
+  stroke: var(--vl-map-road);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.ground__trail {
+  fill: none;
+  stroke: var(--vl-map-trail);
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+  stroke-linecap: round;
+}
+
+.ground__town {
+  fill: var(--vl-map-town);
+  stroke: var(--vl-map-town-line);
+  stroke-width: 1.5;
+}
+
+.map__label {
+  position: absolute;
+  z-index: 1;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.map__label--town {
+  transform: translateX(-50%);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--vl-map-label-town);
+}
+
+.map__label--water {
+  color: var(--vl-map-label-water);
+}
+
+.pin {
+  position: absolute;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+.pin.is-selected {
+  z-index: 20;
+}
+
+.pin--static {
+  cursor: default;
+  pointer-events: none;
+}
+
+.pin__mark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  box-sizing: border-box;
+  border: 3px solid var(--vl-accent);
+  border-radius: 999px;
+  background: var(--vl-surface);
+  box-shadow: 0 2px 6px rgb(14 28 43 / 28%);
+  transition: transform 0.12s;
+}
+
+.pin:hover .pin__mark {
+  transform: scale(1.12);
+}
+
+.pin__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--vl-accent);
+}
+
+.pin.is-selected .pin__mark {
+  width: 36px;
+  height: 36px;
+  border-color: var(--vl-surface);
+  background: var(--vl-accent);
+}
+
+.pin.is-selected .pin__dot {
+  background: var(--vl-surface);
+}
+
+.popover {
+  position: absolute;
+  z-index: 30;
+  width: min(300px, calc(100% - 32px));
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  background: var(--vl-surface);
+  border: 1px solid var(--vl-line);
+  border-radius: var(--vl-radius-card);
+  box-shadow: var(--vl-shadow-pop);
+}
+
+.popover--up {
+  transform: translateY(-100%);
+}
+
+.popover__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.popover__category {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--vl-accent);
+}
+
+.popover__close {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin: -6px -6px -6px 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--vl-ink-2);
+  cursor: pointer;
+}
+
+.popover__close:hover {
+  background: #eef1f4;
+}
+
+.popover__title {
+  margin: -4px 0 0;
+  font-size: 17px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.popover__text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--vl-ink-2);
+}
+
+.popover__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+}
+
+.popover__price {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.popover__hours {
+  font-size: 13px;
+  color: var(--vl-ink-2);
+}
+
+.popover__season {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vl-warn-fg);
+}
+
+.popover .vl-btn {
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.is-unknown {
+  color: var(--vl-ink-3);
+}
+
+.map__unplaced {
+  margin: 0;
+  font-size: 13px;
+  color: var(--vl-ink-3);
+}

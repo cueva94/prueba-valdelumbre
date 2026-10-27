@@ -1,0 +1,48 @@
+<header class="header">
+  <div class="header__inner">
+    <a class="brand" routerLink="/" [attr.aria-label]="'app.brandHome' | translate">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <rect class="brand__mark" width="32" height="32" rx="8" />
+        <path
+          d="M9 20a7 7 0 0 1 14 0"
+          stroke="#FFFFFF"
+          stroke-width="2.5"
+          fill="none"
+          stroke-linecap="round"
+        />
+        <path d="M7 24h18" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+      </svg>
+      <span class="brand__name">Valdelumbre</span>
+      <span class="brand__tagline">{{ 'app.tagline' | translate }}</span>
+    </a>
+    <nav class="nav" [attr.aria-label]="'navigation.label' | translate">
+      <a
+        routerLink="/"
+        routerLinkActive="is-active"
+        ariaCurrentWhenActive="page"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >{{ 'navigation.home' | translate }}</a
+      >
+      <a routerLink="/explorar" routerLinkActive="is-active" ariaCurrentWhenActive="page">{{
+        'navigation.explore' | translate
+      }}</a>
+      <a routerLink="/asistente" routerLinkActive="is-active" ariaCurrentWhenActive="page">{{
+        'navigation.assistant' | translate
+      }}</a>
+    </nav>
+    <div class="language" role="group" [attr.aria-label]="'language.selector' | translate">
+      @for (code of languages; track code) {
+        <button
+          type="button"
+          class="language__option"
+          [attr.lang]="code"
+          [attr.aria-label]="'language.' + code | translate"
+          [attr.aria-pressed]="code === language.current()"
+          (click)="language.use(code)"
+        >
+          {{ code.toUpperCase() }}
+        </button>
+      }
+    </div>
+  </div>
+</header>

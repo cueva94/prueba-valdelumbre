@@ -1,0 +1,73 @@
+<form class="ask" [class.ask--compact]="compact()" novalidate (submit)="submit($event)">
+  <label class="ask__label" [class.visually-hidden]="!showLabel()" [for]="id">{{ label() }}</label>
+  <div class="ask__field" [class.is-invalid]="showError()">
+    @if (!compact()) {
+      <svg
+        class="ask__icon"
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.75"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M4 5h16v11H9l-5 4z" />
+      </svg>
+    }
+    <input
+      #field
+      type="text"
+      autocomplete="off"
+      enterkeyhint="send"
+      [id]="id"
+      [value]="value()"
+      [attr.maxlength]="maxLength"
+      [placeholder]="placeholder()"
+      [attr.aria-invalid]="showError() || null"
+      [attr.aria-describedby]="id + '-help'"
+      (input)="onInput($event)"
+    />
+    <button type="submit" class="vl-btn vl-btn--primary" [class.is-empty]="!value().trim()">
+      {{ 'askBox.submit' | translate }}
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
+    </button>
+  </div>
+  <div class="ask__help" [id]="id + '-help'">
+    @if (showError()) {
+      <span class="ask__error" role="alert">{{ errorKey() | translate }}</span>
+    }
+    <span class="ask__count">{{ value().length }} / {{ maxLength }}</span>
+  </div>
+  @if (topics().length) {
+    <fieldset class="ask__topics">
+      <legend class="visually-hidden">{{ 'askBox.topics' | translate }}</legend>
+      @for (topic of topics(); track topic.labelKey) {
+        <button
+          type="button"
+          class="vl-chip"
+          [attr.aria-pressed]="value() === (topic.questionKey | translate)"
+          (click)="pickTopic(topic)"
+        >
+          {{ topic.labelKey | translate }}
+        </button>
+      }
+    </fieldset>
+  }
+</form>

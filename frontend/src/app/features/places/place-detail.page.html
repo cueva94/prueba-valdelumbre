@@ -1,0 +1,406 @@
+<div class="page">
+  @if (place.hasValue()) {
+    @let poi = place.value();
+    <nav class="breadcrumb" [attr.aria-label]="'placeDetail.breadcrumb' | translate">
+      <ol>
+        <li>
+          <a routerLink="/explorar">{{ 'navigation.explore' | translate }}</a>
+        </li>
+        @if (category(); as category) {
+          <li aria-hidden="true">/</li>
+          <li>
+            <a routerLink="/explorar" [queryParams]="{ category: category.id }">{{
+              category.pluralKey | translate
+            }}</a>
+          </li>
+        }
+        <li aria-hidden="true">/</li>
+        <li aria-current="page" [attr.lang]="poi.nombre.idioma">{{ poi.nombre.texto }}</li>
+      </ol>
+    </nav>
+
+    <article class="place">
+      <div class="panel hero">
+        <div class="hero__badges">
+          <span class="chip-category">
+            <app-category-icon [category]="poi.categoria" [size]="16" />
+            {{ categoryLabel() | translate }}
+          </span>
+          @switch (openingStatus()) {
+            @case ('open') {
+              <span class="status status--open">
+                <span class="status__dot" aria-hidden="true"></span
+                >{{ 'placeDetail.openNow' | translate }}
+              </span>
+            }
+            @case ('closed') {
+              <span class="status status--closed">
+                <span class="status__dot" aria-hidden="true"></span
+                >{{ 'placeDetail.closedNow' | translate }}
+              </span>
+            }
+            @case ('unconfirmed') {
+              <span class="status status--unconfirmed">{{
+                'placeDetail.unconfirmed' | translate
+              }}</span>
+            }
+          }
+        </div>
+        <h1 class="hero__title" [attr.lang]="poi.nombre.idioma">{{ poi.nombre.texto }}</h1>
+        <p class="hero__lead" [attr.lang]="poi.descripcion.idioma">{{ poi.descripcion.texto }}</p>
+        @if (tags().length) {
+          <ul class="tags" [attr.aria-label]="'placeDetail.tags' | translate">
+            @for (tag of tags(); track tag) {
+              <li class="tags__item">{{ tag }}</li>
+            }
+          </ul>
+        }
+
+        <dl class="facts">
+          <div class="fact fact--today">
+            <dt class="fact__label">
+              <span class="fact__icon" aria-hidden="true">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.9"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  focusable="false"
+                >
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 7v5l3 2" />
+                </svg>
+              </span>
+              {{ 'placeDetail.today' | translate }}
+            </dt>
+            <dd class="fact__value" [class.is-unknown]="hoursUnknown()">
+              @for (range of today().ranges; track $index; let last = $last) {
+                <span class="fact__range">{{ range }}</span
+                >{{ last ? '' : ('common.and' | translate) }}
+              } @empty {
+                {{ today().text }}
+              }
+              @if (today().seasonal) {
+                <span class="fact__note">{{ 'placeDetail.seasonalOnly' | translate }}</span>
+              }
+            </dd>
+          </div>
+          <div class="fact">
+            <dt class="fact__label">
+              <span class="fact__icon" aria-hidden="true">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.9"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  focusable="false"
+                >
+                  <path d="M17 6.5A7 7 0 1 0 17 17.5M4 10h9M4 14h9" />
+                </svg>
+              </span>
+              {{ 'placeDetail.price' | translate }}
+            </dt>
+            <dd class="fact__value" [class.is-unknown]="!poi.precio">{{ poi.precio | price }}</dd>
+          </div>
+          <div class="fact">
+            <dt class="fact__label">
+              <span class="fact__icon" aria-hidden="true">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.9"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  focusable="false"
+                >
+                  <circle cx="11" cy="4.5" r="1.5" />
+                  <path d="M11 7.5v5.5h5l2 5M11 10h5M8 10.6A5 5 0 1 0 14.6 18" />
+                </svg>
+              </span>
+              {{ 'placeDetail.accessibility' | translate }}
+            </dt>
+            <dd class="fact__value"><app-access-badge [accessible]="poi.accesible" /></dd>
+          </div>
+        </dl>
+
+        @for (season of seasonsInline(); track season) {
+          <p class="notice notice--warn">
+            <strong>{{ 'placeDetail.seasonNotice' | translate }}</strong> {{ season }}.
+          </p>
+        }
+
+        <section class="ask-here" aria-labelledby="ask-here-title">
+          <h2 id="ask-here-title" class="ask-here__title">
+            <span class="ask-here__icon" aria-hidden="true">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.9"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                focusable="false"
+              >
+                <path d="M4 5h16v11H9l-5 4z" />
+              </svg>
+            </span>
+            {{ 'placeDetail.askTitle' | translate }}
+          </h2>
+          <app-ask-box
+            [label]="'placeDetail.askLabel' | translate: { name: poi.nombre.texto }"
+            [showLabel]="false"
+            [placeholder]="'placeDetail.askPlaceholder' | translate: { name: poi.nombre.texto }"
+            [compact]="true"
+            (submitted)="ask($event)"
+          />
+          <ul class="quick" [attr.aria-label]="'placeDetail.quickQuestions' | translate">
+            @for (question of quickQuestions(); track question) {
+              <li>
+                <a class="vl-chip" routerLink="/asistente" [queryParams]="{ q: question }">{{
+                  question
+                }}</a>
+              </li>
+            }
+          </ul>
+        </section>
+      </div>
+
+      <section class="practical" aria-labelledby="practical-title">
+        <h2 id="practical-title" class="practical__title">
+          {{ 'placeDetail.practical' | translate }}
+        </h2>
+        <div class="practical__grid">
+          <section class="panel info info--hours" aria-labelledby="hours-title">
+            <h3 id="hours-title" class="info__title">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.9"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v5l3 2" />
+              </svg>
+              {{ 'placeDetail.hours' | translate }}
+            </h3>
+            @if (poi.horario.siempre_abierto) {
+              <div class="hours-state hours-state--open">
+                <span class="hours-state__icon" aria-hidden="true">
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    focusable="false"
+                  >
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M8 12.5l2.8 2.8L16 10" />
+                  </svg>
+                </span>
+                <p class="hours-state__title">{{ 'hours.alwaysOpen' | translate }}</p>
+                <p class="hours-state__text">{{ 'placeDetail.alwaysOpenText' | translate }}</p>
+              </div>
+            } @else if (hoursUnknown()) {
+              <div class="hours-state">
+                <span class="hours-state__icon" aria-hidden="true">
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    focusable="false"
+                  >
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 7v5l3 2" />
+                  </svg>
+                </span>
+                <p class="hours-state__title">{{ 'hours.unpublished' | translate }}</p>
+                <p class="hours-state__text">{{ 'placeDetail.unpublishedText' | translate }}</p>
+                @if (touristOffice(); as office) {
+                  <a class="vl-btn vl-btn--outline hours-state__action" [routerLink]="office">
+                    {{ 'placeDetail.touristOffice' | translate }}
+                  </a>
+                }
+              </div>
+            } @else {
+              <table class="hours">
+                <caption class="visually-hidden">
+                  {{
+                    'placeDetail.hoursCaption' | translate
+                  }}
+                </caption>
+                <tbody>
+                  @for (day of schedule(); track day.weekday) {
+                    <tr [class.is-today]="day.isToday">
+                      <th scope="row">
+                        {{ day.name }}
+                        @if (day.isToday) {
+                          <span class="hours__today">{{
+                            'placeDetail.todayMark' | translate
+                          }}</span>
+                        }
+                      </th>
+                      @if (day.ranges.length) {
+                        <td class="hours__open">
+                          @for (range of day.ranges; track $index; let last = $last) {
+                            <span class="hours__range">{{ range }}</span
+                            >{{ last ? '' : ('common.and' | translate) }}
+                          }
+                        </td>
+                      } @else {
+                        <td class="is-unknown">
+                          {{
+                            (poi.horario.incompleto ? 'placeDetail.noData' : 'placeDetail.closed')
+                              | translate
+                          }}
+                        </td>
+                      }
+                    </tr>
+                  }
+                </tbody>
+              </table>
+              @if (scheduleSeason()) {
+                <p class="info__note">
+                  {{ 'placeDetail.seasonValidity' | translate: { season: scheduleSeason() } }}
+                </p>
+              }
+              @if (poi.horario.incompleto) {
+                <p class="info__note">{{ 'placeDetail.incomplete' | translate }}</p>
+              }
+            }
+          </section>
+
+          @if (poi.coordenadas && catalog.hasValue()) {
+            <section class="panel info info--map" aria-labelledby="where-title">
+              <h3 id="where-title" class="info__title">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.9"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" />
+                  <circle cx="12" cy="9.5" r="2.5" />
+                </svg>
+                {{ 'placeDetail.where' | translate }}
+              </h3>
+              <app-poi-map
+                class="place-map"
+                [pois]="[poi]"
+                [frame]="catalog.value()"
+                [interactive]="false"
+              />
+            </section>
+          }
+
+          @if (seasons().length) {
+            <section class="panel info info--wide" aria-labelledby="season-title">
+              <h3 id="season-title" class="info__title">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.9"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <rect x="3" y="5" width="18" height="16" rx="2" />
+                  <path d="M3 10h18M8 3v4M16 3v4" />
+                </svg>
+                {{ 'placeDetail.season' | translate }}
+              </h3>
+              @for (season of seasons(); track season) {
+                <p class="info__value">{{ season }}</p>
+              }
+              <ol class="months" [attr.aria-label]="'placeDetail.seasonMonths' | translate">
+                @for (month of months(); track $index) {
+                  <li [attr.aria-label]="month.label">
+                    <span
+                      class="months__bar"
+                      [class.is-on]="month.inSeason"
+                      aria-hidden="true"
+                    ></span>
+                    <span
+                      class="months__initial"
+                      [class.is-on]="month.inSeason"
+                      aria-hidden="true"
+                      >{{ month.initial }}</span
+                    >
+                  </li>
+                }
+              </ol>
+            </section>
+          }
+        </div>
+      </section>
+    </article>
+  } @else {
+    <h1 class="visually-hidden">
+      {{ (notFound() ? 'placeDetail.notFound' : 'placeDetail.heading') | translate }}
+    </h1>
+    @if (notFound()) {
+      <app-state-panel
+        [eyebrow]="'common.error404' | translate"
+        [heading]="'placeDetail.notFoundTitle' | translate"
+        [message]="'placeDetail.notFoundMessage' | translate"
+      >
+        <a class="vl-btn vl-btn--primary" routerLink="/explorar">{{
+          'common.seeAllPlaces' | translate
+        }}</a>
+      </app-state-panel>
+    } @else if (place.error()) {
+      <app-state-panel
+        tone="error"
+        [heading]="'placeDetail.loadError' | translate"
+        [message]="'common.checkConnection' | translate"
+      >
+        <button type="button" class="vl-btn vl-btn--primary" (click)="place.reload()">
+          {{ 'common.retry' | translate }}
+        </button>
+        <a class="vl-btn vl-btn--outline" routerLink="/explorar">{{
+          'common.seeAllPlaces' | translate
+        }}</a>
+      </app-state-panel>
+    } @else {
+      <p class="loading" role="status">{{ 'placeDetail.loading' | translate }}</p>
+      <div class="panel skeleton-hero" aria-hidden="true"></div>
+    }
+  }
+</div>

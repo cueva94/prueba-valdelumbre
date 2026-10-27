@@ -1,0 +1,36 @@
+:host {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+}
+
+/* El contenido recibe el foco al navegar; no necesita contorno. */
+.main:focus {
+  outline: none;
+}
+
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 200;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 10px;
+  /* Aparece sobre la cabecera oscura: el azul de la marca se distingue de ella. */
+  background: var(--vl-accent);
+  color: var(--vl-surface);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+}

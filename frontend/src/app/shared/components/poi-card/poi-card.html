@@ -1,0 +1,103 @@
+@if (variant() === 'cited') {
+  <a class="card card--cited" [routerLink]="['/lugares', poi().id]">
+    <span class="card__top">
+      <span class="card__category">{{ categoryLabel() | translate }}</span>
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
+    </span>
+    <span class="card__name" [attr.lang]="poi().nombre.idioma">{{ poi().nombre.texto }}</span>
+    <app-access-badge [accessible]="poi().accesible" />
+    <span class="card__meta">
+      <span [class.is-unknown]="!poi().precio">{{ poi().precio | price }}</span>
+      ·
+      <span [class.is-unknown]="hoursUnknown()">{{ poi().horario | hoursSummary }}</span>
+    </span>
+  </a>
+} @else {
+  <article class="card" [class.is-selected]="selected()">
+    <div class="card__top">
+      <span class="card__category">{{ categoryLabel() | translate }}</span>
+      @if (seasonal()) {
+        <span class="tag tag--warn">{{ 'card.seasonal' | translate }}</span>
+      }
+    </div>
+    @switch (headingLevel()) {
+      @case (4) {
+        <h4 class="card__name" [attr.lang]="poi().nombre.idioma">{{ poi().nombre.texto }}</h4>
+      }
+      @case (3) {
+        <h3 class="card__name" [attr.lang]="poi().nombre.idioma">{{ poi().nombre.texto }}</h3>
+      }
+      @default {
+        <h2 class="card__name" [attr.lang]="poi().nombre.idioma">{{ poi().nombre.texto }}</h2>
+      }
+    }
+    <div class="card__facts">
+      <span class="card__price" [class.is-unknown]="!poi().precio">{{ poi().precio | price }}</span>
+      <app-access-badge [accessible]="poi().accesible" />
+      <span class="card__hours" [class.is-unknown]="hoursUnknown()">{{
+        poi().horario | hoursSummary
+      }}</span>
+    </div>
+    <div class="card__actions">
+      @if (canLocate()) {
+        <button
+          type="button"
+          class="vl-btn vl-btn--ghost vl-btn--sm"
+          [attr.aria-pressed]="selected()"
+          (click)="locate.emit(poi().id)"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.9"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" />
+            <circle cx="12" cy="9.5" r="2.5" />
+          </svg>
+          {{ 'common.showOnMap' | translate
+          }}<span class="visually-hidden">: {{ poi().nombre.texto }}</span>
+        </button>
+      }
+      <a class="vl-btn vl-btn--text vl-btn--sm" [routerLink]="['/lugares', poi().id]">
+        {{ 'common.readMore' | translate
+        }}<span class="visually-hidden">{{
+          'common.readMoreAbout' | translate: { name: poi().nombre.texto }
+        }}</span>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d="M5 12h14M13 6l6 6-6 6" />
+        </svg>
+      </a>
+    </div>
+  </article>
+}

@@ -1,0 +1,124 @@
+:host {
+  display: block;
+}
+
+/* Pie oscuro, con la tinta de la marca: cierra todas las pantallas. */
+.footer {
+  background: var(--vl-ink);
+  color: var(--vl-footer-text);
+}
+
+/* El anillo de foco global es azul y no contrasta sobre este fondo. */
+.footer :focus-visible {
+  outline-color: var(--vl-surface);
+}
+
+.footer__inner {
+  max-width: var(--vl-page);
+  margin: 0 auto;
+  padding: 32px 24px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px 40px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--vl-surface);
+  text-decoration: none;
+}
+
+.brand__mark {
+  fill: var(--vl-accent);
+}
+
+.brand__name {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.footer__about {
+  margin: 10px 0 0;
+  max-width: 320px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--vl-footer-muted);
+}
+
+.footer__title {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--vl-surface);
+}
+
+.footer__links {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Las categorías, en dos columnas: el pie queda más bajo. */
+.footer__links--two-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 16px;
+}
+
+.footer__links a {
+  display: inline-block;
+  padding: 2px 0;
+  font-size: 14px;
+  color: var(--vl-footer-text);
+  text-decoration: none;
+}
+
+.footer__text {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.footer__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--vl-surface);
+  text-decoration: none;
+}
+
+.footer__links a:hover,
+.footer__more:hover {
+  color: var(--vl-surface);
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .footer__inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .footer__inner {
+    gap: 20px 16px;
+    padding: 28px 16px;
+  }
+
+  .footer__brand,
+  .footer__discover {
+    grid-column: 1 / -1;
+  }
+}

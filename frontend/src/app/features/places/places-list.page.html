@@ -1,0 +1,171 @@
+<div class="page page--wide">
+  <div class="intro">
+    <div>
+      <h1 class="page__title">{{ 'places.title' | translate }}</h1>
+      <p class="page__lead">
+        @if (catalogCount() !== null) {
+          {{ 'places.lead' | translate: { count: catalogCount() } }}
+        } @else {
+          {{ 'places.leadLoading' | translate }}
+        }
+      </p>
+    </div>
+    <a class="vl-btn vl-btn--outline" routerLink="/asistente">
+      <svg
+        class="intro__icon"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.9"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M4 5h16v11H9l-5 4z" />
+      </svg>
+      {{ 'common.askAssistant' | translate }}
+    </a>
+  </div>
+
+  <section class="filters" [attr.aria-label]="'places.filters' | translate">
+    <fieldset class="filters__categories">
+      <legend class="visually-hidden">{{ 'places.category' | translate }}</legend>
+      <button
+        type="button"
+        class="vl-chip vl-chip--filter"
+        [attr.aria-pressed]="!filters().categoria"
+        (click)="setCategory(null)"
+      >
+        {{ 'places.allCategories' | translate }}
+        <span class="vl-chip__count">{{ categoryCount(null) }}</span>
+      </button>
+      @for (category of categories; track category.id) {
+        <button
+          type="button"
+          class="vl-chip vl-chip--filter"
+          [attr.aria-pressed]="filters().categoria === category.id"
+          (click)="setCategory(category.id)"
+        >
+          {{ category.pluralKey | translate }}
+          <span class="vl-chip__count">{{ categoryCount(category.id) }}</span>
+        </button>
+      }
+    </fieldset>
+
+    <div class="filters__row">
+      <div class="field">
+        <label for="filtro-accesible">{{ 'places.accessibility' | translate }}</label>
+        <select id="filtro-accesible" (change)="onAccessibilityChange($event)">
+          <option value="" [selected]="filters().accesible === undefined">
+            {{ 'places.anyAccessibility' | translate }}
+          </option>
+          <option value="true" [selected]="filters().accesible === true">
+            {{ 'accessibility.accessible' | translate }}
+          </option>
+          <option value="false" [selected]="filters().accesible === false">
+            {{ 'accessibility.notAccessible' | translate }}
+          </option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="filtro-dia">{{ 'places.open' | translate }}</label>
+        <select id="filtro-dia" (change)="onDayChange($event)">
+          <option value="" [selected]="openDay() === ''">
+            {{ 'places.anyTime' | translate }}
+          </option>
+          <option value="now" [selected]="openDay() === 'now'">
+            {{ 'places.now' | translate }}
+          </option>
+          @for (weekday of weekdays(); track $index; let index = $index) {
+            <option [value]="index + 1" [selected]="openDay() === '' + (index + 1)">
+              {{ 'places.onDay' | translate: { day: weekday } }}
+            </option>
+          }
+        </select>
+      </div>
+      <div class="field field--hour">
+        <label for="filtro-hora">{{ 'places.atHour' | translate }}</label>
+        <select
+          id="filtro-hora"
+          [disabled]="openDay() === '' || openDay() === 'now'"
+          (change)="onHourChange($event)"
+        >
+          @for (hour of hourOptions(); track hour) {
+            <option [value]="hour" [selected]="hour === openHour()">{{ hour }}</option>
+          }
+        </select>
+      </div>
+      <div class="filters__summary">
+        <p class="filters__count" role="status">{{ countLabel() }}</p>
+        @if (hasFilters()) {
+          <button type="button" class="vl-btn vl-btn--link" (click)="clearFilters()">
+            {{ 'common.clearFilters' | translate }}
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (unpublishedHoursCount()) {
+      <p class="notice notice--unknown">
+        {{ unpublishedHoursNotice() }}
+      </p>
+    }
+  </section>
+
+  @if (results().error()) {
+    <app-state-panel
+      tone="error"
+      [heading]="'common.placesLoadError' | translate"
+      [message]="'common.checkConnection' | translate"
+    >
+      <button type="button" class="vl-btn vl-btn--primary" (click)="retry()">
+        {{ 'common.retry' | translate }}
+      </button>
+    </app-state-panel>
+  } @else if (results().hasValue() && resultPois().length === 0) {
+    <app-state-panel
+      [heading]="'places.emptyTitle' | translate"
+      [message]="'places.emptyMessage' | translate"
+    >
+      <button type="button" class="vl-btn vl-btn--outline-strong" (click)="clearFilters()">
+        {{ 'common.clearFilters' | translate }}
+      </button>
+      <a class="vl-btn vl-btn--primary" routerLink="/asistente">{{
+        'places.askAssistant' | translate
+      }}</a>
+    </app-state-panel>
+  } @else {
+    <div class="split" [attr.aria-busy]="results().isLoading()">
+      @if (results().hasValue()) {
+        <ul class="results" [attr.aria-label]="'places.results' | translate">
+          @for (poi of resultPois(); track poi.id) {
+            <li [id]="'resultado-' + poi.id">
+              <app-poi-card
+                [poi]="poi"
+                [selected]="poi.id === activeId()"
+                [locatable]="true"
+                (locate)="locate($event)"
+              />
+            </li>
+          }
+        </ul>
+      } @else {
+        <ul class="results" aria-hidden="true">
+          @for (skeleton of skeletons; track skeleton) {
+            <li class="skeleton-card"></li>
+          }
+        </ul>
+      }
+      <app-poi-map
+        class="split__map"
+        [pois]="resultPois()"
+        [frame]="catalogPois()"
+        [selectedId]="activeId()"
+        (selectedChange)="onMapSelection($event)"
+      />
+    </div>
+  }
+</div>

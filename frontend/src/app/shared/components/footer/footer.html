@@ -1,0 +1,79 @@
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__brand">
+      <a class="brand" routerLink="/" [attr.aria-label]="'app.brandHome' | translate">
+        <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <rect class="brand__mark" width="32" height="32" rx="8" />
+          <path
+            d="M9 20a7 7 0 0 1 14 0"
+            stroke="#FFFFFF"
+            stroke-width="2.5"
+            fill="none"
+            stroke-linecap="round"
+          />
+          <path d="M7 24h18" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+        </svg>
+        <span class="brand__name">Valdelumbre</span>
+      </a>
+      <p class="footer__about">{{ 'footer.about' | translate }}</p>
+    </div>
+
+    <nav class="footer__column footer__discover" aria-labelledby="footer-discover">
+      <h2 id="footer-discover" class="footer__title">{{ 'footer.discover' | translate }}</h2>
+      <ul class="footer__links footer__links--two-columns">
+        @for (category of categories; track category.id) {
+          <li>
+            <a routerLink="/explorar" [queryParams]="{ category: category.id }">{{
+              category.pluralKey | translate
+            }}</a>
+          </li>
+        }
+      </ul>
+    </nav>
+
+    <nav class="footer__column" aria-labelledby="footer-plan">
+      <h2 id="footer-plan" class="footer__title">{{ 'footer.plan' | translate }}</h2>
+      <ul class="footer__links">
+        <li>
+          <a routerLink="/explorar">{{ 'footer.allPlaces' | translate }}</a>
+        </li>
+        <li>
+          <a routerLink="/explorar" [queryParams]="{ open: 'now' }">{{
+            'footer.openNow' | translate
+          }}</a>
+        </li>
+        <li>
+          <a routerLink="/explorar" [queryParams]="{ accessible: 'true' }">{{
+            'footer.accessiblePlaces' | translate
+          }}</a>
+        </li>
+        <li>
+          <a routerLink="/asistente">{{ 'common.askAssistant' | translate }}</a>
+        </li>
+      </ul>
+    </nav>
+
+    <section class="footer__column" aria-labelledby="footer-office">
+      <h2 id="footer-office" class="footer__title">{{ 'footer.office' | translate }}</h2>
+      <p class="footer__text">{{ 'footer.officeText' | translate }}</p>
+      <a class="footer__more" [routerLink]="touristOffice">
+        {{ 'footer.officeHours' | translate
+        }}<span class="visually-hidden">{{ 'footer.officeHoursOf' | translate }}</span>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d="M5 12h14M13 6l6 6-6 6" />
+        </svg>
+      </a>
+    </section>
+  </div>
+</footer>

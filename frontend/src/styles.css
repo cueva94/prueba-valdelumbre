@@ -1,1 +1,311 @@
-/* Estilos globales de la pantalla. */
+/* Estilos globales: tokens del diseño (DESIGN.md → Tokens) y piezas comunes. */
+
+:root {
+  --vl-accent: #1459c7;
+  --vl-accent-strong: #0e3f8f;
+  --vl-accent-soft: #1459c71a;
+  --vl-ink: #0e1c2b;
+  --vl-ink-2: #3c4a5b;
+  --vl-ink-3: #5d6b7b;
+  --vl-line: #dde3ea;
+  --vl-line-soft: #edf0f3;
+  --vl-line-strong: #b9c4d0;
+  --vl-ground: #f4f6f8;
+  --vl-surface: #ffffff;
+  --vl-ok-fg: #17603a;
+  --vl-ok-bg: #e6f3eb;
+  --vl-warn-fg: #7f4600;
+  --vl-warn-bg: #fdf1dd;
+  --vl-warn-ink: #5e3500;
+  --vl-err-fg: #b42318;
+  --vl-err-bg: #fdecea;
+  --vl-err-line: #f3c4bf;
+  --vl-unknown: #9aa6b2;
+  --vl-map-land: #eef2ea;
+  --vl-map-hills: #e2eada;
+  --vl-map-contour: #cdd9c3;
+  --vl-map-woods: #d6e4cd;
+  --vl-map-fields: #dccfb2;
+  --vl-map-town: #f7f3eb;
+  --vl-map-town-line: #e4daca;
+  --vl-map-road: #ffffff;
+  --vl-map-road-edge: #dce2d5;
+  --vl-map-trail: #c9b994;
+  --vl-map-river: #b7d4ea;
+  --vl-map-water: #cfe2f1;
+  --vl-map-water-line: #a9cae4;
+  --vl-map-label-town: #6b5c44;
+  --vl-map-label-water: #3e6a8f;
+  --vl-footer-text: #c9d3de;
+  --vl-footer-muted: #9aa9ba;
+  --vl-footer-line: #24364a;
+  --vl-header-hover: #1b2e42;
+
+  --vl-radius-chip: 999px;
+  --vl-radius-btn: 12px;
+  --vl-radius-card: 16px;
+  --vl-radius-panel: 20px;
+  --vl-shadow-pop: 0 14px 36px rgb(14 28 43 / 20%);
+  --vl-shadow-sel: 0 6px 20px rgb(14 28 43 / 8%);
+
+  --vl-page: 1200px;
+  --vl-page-wide: 1320px;
+  --vl-page-narrow: 960px;
+
+  color-scheme: light;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--vl-ground);
+  color: var(--vl-ink);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+a {
+  color: var(--vl-accent);
+}
+
+a:hover {
+  color: var(--vl-accent-strong);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--vl-accent);
+  outline-offset: 2px;
+}
+
+/* Visible solo para lectores de pantalla. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- Página ------------------------------------------------------------------------------ */
+
+.page {
+  max-width: var(--vl-page);
+  margin: 0 auto;
+  padding: 28px 24px 56px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.page--wide {
+  max-width: var(--vl-page-wide);
+}
+
+.page--narrow {
+  max-width: var(--vl-page-narrow);
+}
+
+.page__title {
+  margin: 0;
+  font-size: clamp(26px, 4vw, 32px);
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.page__lead {
+  margin: 6px 0 0;
+  font-size: 16px;
+  color: var(--vl-ink-2);
+}
+
+.panel {
+  background: var(--vl-surface);
+  border: 1px solid var(--vl-line);
+  border-radius: var(--vl-radius-panel);
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding: 20px 16px 40px;
+  }
+}
+
+/* --- Botones ----------------------------------------------------------------------------- */
+
+.vl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: var(--vl-radius-btn);
+  background: transparent;
+  color: var(--vl-ink);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.vl-btn--primary {
+  background: var(--vl-accent);
+  color: var(--vl-surface);
+}
+
+.vl-btn--primary:hover {
+  background: var(--vl-accent-strong);
+  color: var(--vl-surface);
+}
+
+.vl-btn--outline {
+  border: 1px solid var(--vl-line);
+  background: var(--vl-surface);
+}
+
+.vl-btn--outline-strong {
+  border: 1.5px solid var(--vl-ink);
+  background: var(--vl-surface);
+}
+
+.vl-btn--outline:hover,
+.vl-btn--outline-strong:hover,
+.vl-btn--ghost:hover {
+  background: #eef1f4;
+  color: var(--vl-ink);
+}
+
+.vl-btn--ghost {
+  border: 1px solid var(--vl-line);
+  background: var(--vl-surface);
+}
+
+.vl-btn--text {
+  padding: 0 12px;
+}
+
+.vl-btn--link {
+  padding: 0 4px;
+  color: var(--vl-accent);
+}
+
+.vl-btn--sm {
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+/* --- Chips ------------------------------------------------------------------------------- */
+
+.vl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  border: 1px solid var(--vl-line);
+  border-radius: var(--vl-radius-chip);
+  background: #f8fafb;
+  color: var(--vl-ink-2);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.vl-chip:hover {
+  border-color: var(--vl-accent);
+  color: var(--vl-ink);
+}
+
+.vl-chip--large {
+  min-height: 44px;
+  padding: 0 16px;
+  font-size: 15px;
+}
+
+/* Chip de filtro: seleccionado, fondo oscuro (aria-pressed). */
+.vl-chip--filter {
+  background: var(--vl-surface);
+  font-weight: 600;
+}
+
+.vl-chip--filter[aria-pressed='true'] {
+  border-color: var(--vl-ink);
+  background: var(--vl-ink);
+  color: var(--vl-surface);
+}
+
+.vl-chip[aria-pressed='true']:not(.vl-chip--filter) {
+  border-color: var(--vl-accent);
+  background: var(--vl-accent-soft);
+  color: var(--vl-accent);
+}
+
+.vl-chip__count {
+  font-weight: 500;
+  opacity: 0.8;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Avisos y etiquetas ------------------------------------------------------------------ */
+
+.notice {
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.notice--warn {
+  background: var(--vl-warn-bg);
+  color: var(--vl-warn-ink);
+}
+
+/* Lo que no consta en la ficha: borde discontinuo, nunca como un dato confirmado. */
+.notice--unknown {
+  border: 1px dashed var(--vl-unknown);
+  color: var(--vl-ink-2);
+}
+
+.tag {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: var(--vl-radius-chip);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.tag--warn {
+  background: var(--vl-warn-bg);
+  color: var(--vl-warn-fg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
