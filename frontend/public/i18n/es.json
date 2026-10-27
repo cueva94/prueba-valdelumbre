@@ -1,0 +1,281 @@
+{
+  "app": {
+    "skipToContent": "Saltar al contenido",
+    "brandHome": "Valdelumbre, ir al inicio",
+    "tagline": "Guía del visitante"
+  },
+  "titles": {
+    "home": "Valdelumbre · Guía del visitante",
+    "places": "Explorar · Valdelumbre",
+    "place": "Ficha del lugar · Valdelumbre",
+    "placeNamed": "{{name}} · Valdelumbre",
+    "placeNotFound": "Lugar no encontrado · Valdelumbre",
+    "assistant": "Asistente · Valdelumbre",
+    "notFound": "Página no encontrada · Valdelumbre"
+  },
+  "navigation": {
+    "label": "Principal",
+    "home": "Inicio",
+    "explore": "Explorar",
+    "assistant": "Asistente"
+  },
+  "language": {
+    "selector": "Idioma",
+    "es": "Español",
+    "en": "English"
+  },
+  "common": {
+    "places": {
+      "one": "1 lugar",
+      "other": "{{count}} lugares"
+    },
+    "loadingPlaces": "Cargando lugares…",
+    "placesLoadError": "No hemos podido cargar los lugares",
+    "checkConnection": "Comprueba tu conexión e inténtalo de nuevo.",
+    "retry": "Volver a intentarlo",
+    "seeAllPlaces": "Ver todos los lugares",
+    "askAssistant": "Pregunta al asistente",
+    "clearFilters": "Limpiar filtros",
+    "readMore": "Saber más",
+    "readMoreAbout": " sobre {{name}}",
+    "showOnMap": "Ver en el mapa",
+    "noCategory": "Sin categoría",
+    "error404": "Error 404",
+    "and": " y ",
+    "close": "Cerrar"
+  },
+  "categories": {
+    "monumento": { "label": "Monumento", "plural": "Monumentos" },
+    "museo": { "label": "Museo", "plural": "Museos" },
+    "naturaleza": { "label": "Naturaleza", "plural": "Naturaleza" },
+    "ruta": { "label": "Ruta", "plural": "Rutas" },
+    "espacio_publico": { "label": "Espacio público", "plural": "Espacios públicos" },
+    "gastronomia": { "label": "Gastronomía", "plural": "Gastronomía" },
+    "servicio": { "label": "Servicio", "plural": "Servicios" }
+  },
+  "questions": {
+    "examples": {
+      "accessibleMuseums": "¿Qué museos son accesibles para silla de ruedas?",
+      "outdoorWithKids": "Planes al aire libre para ir con niños",
+      "openMondayNoon": "¿Qué está abierto el lunes a las 12:00?",
+      "localWine": "¿Dónde puedo probar vino de la zona?",
+      "zipLine": "¿Hay algún sitio con tirolina?",
+      "free": "¿Qué lugares se pueden visitar gratis?"
+    },
+    "topics": {
+      "hours": { "label": "Horarios", "question": "¿Qué está abierto ahora?" },
+      "accessibility": {
+        "label": "Accesibilidad",
+        "question": "¿Qué lugares son accesibles en silla de ruedas?"
+      },
+      "kids": { "label": "Con niños", "question": "Planes para ir con niños" },
+      "wine": { "label": "Vino y gastronomía", "question": "¿Dónde puedo probar vino de la zona?" },
+      "outdoors": { "label": "Aire libre", "question": "¿Qué rutas al aire libre hay?" },
+      "free": { "label": "Gratis", "question": "¿Qué lugares se pueden visitar gratis?" }
+    },
+    "aboutPlace": {
+      "hours": "¿A qué hora abre {{place}}?",
+      "accessible": "¿Es accesible {{place}}?",
+      "price": "¿Cuánto cuesta {{place}}?"
+    }
+  },
+  "hours": {
+    "alwaysOpen": "Abierto siempre",
+    "unpublished": "Horario no publicado",
+    "everyDay": "Todos los días",
+    "incomplete": "{{summary}} (horario incompleto)",
+    "season": "Del {{start}} al {{end}}",
+    "seasonInline": "del {{start}} al {{end}}"
+  },
+  "price": {
+    "free": "Gratis",
+    "range": "{{min}}–{{max}} €",
+    "unknown": "Precio por confirmar"
+  },
+  "accessibility": {
+    "accessible": "Accesible",
+    "notAccessible": "No accesible",
+    "unknown": "Accesibilidad por confirmar"
+  },
+  "askBox": {
+    "submit": "Preguntar",
+    "required": "Escribe una pregunta antes de enviarla.",
+    "requiredOrTopic": "Escribe una pregunta o elige un tema.",
+    "topics": "Temas para empezar"
+  },
+  "map": {
+    "label": "Mapa esquemático de los lugares",
+    "river": "Río Lumbre",
+    "pin": "{{name}}, {{category}}",
+    "seasonOnly": "Solo en temporada: {{seasons}}",
+    "unplaced": "Sin ubicación en el mapa:"
+  },
+  "card": {
+    "seasonal": "De temporada"
+  },
+  "footer": {
+    "about": "Guía del visitante: monumentos, museos, naturaleza, rutas y gastronomía.",
+    "discover": "Descubre",
+    "plan": "Planifica tu visita",
+    "allPlaces": "Todos los lugares",
+    "openNow": "Abierto ahora",
+    "accessiblePlaces": "Lugares accesibles",
+    "office": "Oficina de Turismo",
+    "officeText": "Información, planos y préstamo gratuito de silla de ruedas.",
+    "officeHours": "Ver horario",
+    "officeHoursOf": " de la Oficina de Turismo"
+  },
+  "home": {
+    "count": {
+      "one": "1 lugar para descubrir",
+      "other": "{{count}} lugares para descubrir"
+    },
+    "countLoading": "Lugares para descubrir",
+    "title": "Descubre Valdelumbre y pregunta lo que necesites",
+    "lead": "Descubre qué ver y hacer, y pregunta al asistente por horarios, precios o accesibilidad.",
+    "askPlaceholder": "Por ejemplo: ¿qué museos son accesibles para silla de ruedas?",
+    "examples": "Prueba con una de estas preguntas",
+    "categoriesTitle": "Explora por categoría",
+    "categoriesLead": "{{categories}} categorías, {{places}} lugares.",
+    "categoriesLeadLoading": "Monumentos, museos, naturaleza, rutas y mucho más.",
+    "mapTitle": "Todos los lugares en el mapa",
+    "mapLead": "Pulsa en un punto para echar un vistazo rápido; en «Saber más» tienes toda la información.",
+    "mapFilter": "Filtrar el mapa por categoría",
+    "mapAll": "Todos",
+    "listAll": {
+      "one": "1 lugar",
+      "other": "Los {{count}} lugares"
+    },
+    "listCategory": {
+      "one": "1 lugar de {{category}}",
+      "other": "{{count}} lugares de {{category}}"
+    },
+    "filterLink": "Filtrar por accesibilidad y horario",
+    "loadMore": "Cargar más",
+    "loadMoreHidden": " lugares"
+  },
+  "places": {
+    "title": "Explorar Valdelumbre",
+    "lead": "Los {{count}} lugares de Valdelumbre, con sus horarios, precios y accesibilidad.",
+    "leadLoading": "Los lugares de Valdelumbre, con sus horarios, precios y accesibilidad.",
+    "filters": "Filtros",
+    "category": "Categoría",
+    "allCategories": "Todas",
+    "accessibility": "Accesibilidad",
+    "anyAccessibility": "Cualquiera",
+    "open": "Abierto",
+    "anyTime": "En cualquier momento",
+    "now": "Ahora",
+    "onDay": "El {{day}}",
+    "atHour": "a las",
+    "unpublishedHours": {
+      "one": "De 1 lugar no tenemos el horario, así que no podemos asegurarte que esté abierto.",
+      "other": "De {{count}} lugares no tenemos el horario, así que no podemos asegurarte que estén abiertos."
+    },
+    "emptyTitle": "No hay lugares con todos estos filtros",
+    "emptyMessage": "Prueba a quitar alguno o pregunta al asistente qué te recomienda.",
+    "askAssistant": "Preguntar al asistente",
+    "results": "Resultados"
+  },
+  "placeDetail": {
+    "breadcrumb": "Ruta de navegación",
+    "openNow": "Abierto ahora",
+    "closedNow": "Cerrado ahora",
+    "unconfirmed": "Horario por confirmar",
+    "tags": "Etiquetas",
+    "today": "Hoy",
+    "price": "Precio",
+    "accessibility": "Accesibilidad",
+    "seasonalOnly": "Solo en temporada",
+    "closed": "Cerrado",
+    "noData": "Sin datos",
+    "seasonNotice": "Solo abre en temporada:",
+    "askTitle": "¿Tienes alguna duda sobre este lugar?",
+    "askLabel": "Tu pregunta sobre {{name}}",
+    "askPlaceholder": "Pregunta al asistente sobre {{name}}",
+    "quickQuestions": "Preguntas rápidas sobre este lugar",
+    "practical": "Información práctica",
+    "hours": "Horario",
+    "alwaysOpenText": "Puedes visitarlo cualquier día y a cualquier hora: no tiene horario de apertura.",
+    "unpublishedText": "Este lugar no publica su horario, así que no podemos decirte cuándo abre. Confírmalo antes de ir.",
+    "touristOffice": "Ir a la Oficina de Turismo",
+    "hoursCaption": "Horario semanal de apertura",
+    "todayMark": "· hoy",
+    "seasonValidity": "Este horario solo es válido {{season}}.",
+    "incomplete": "Nos falta parte del horario: los días marcados «Sin datos», confírmalo antes de ir.",
+    "where": "Dónde está",
+    "season": "Temporada",
+    "seasonMonths": "Meses de temporada",
+    "monthInSeason": "{{month}}: en temporada",
+    "monthOutOfSeason": "{{month}}: fuera de temporada",
+    "heading": "Ficha del lugar",
+    "notFound": "Lugar no encontrado",
+    "notFoundTitle": "No encontramos este lugar",
+    "notFoundMessage": "Puede que el enlace esté mal o que el lugar ya no forme parte de la guía.",
+    "loadError": "No hemos podido cargar este lugar",
+    "loading": "Cargando la ficha…"
+  },
+  "assistant": {
+    "title": "¿Qué quieres saber?",
+    "lead": "Resuelvo tus dudas sobre los lugares de Valdelumbre.",
+    "askLabel": "Tu pregunta",
+    "askPlaceholder": "Por ejemplo: ¿qué está abierto ahora?",
+    "welcomeTitle": "¿Por dónde empezamos?",
+    "welcomeText": "Te ayudo a preparar tu visita a Valdelumbre: horarios, precios, accesibilidad y planes. Si algún dato no está disponible, te lo diré.",
+    "starters": "Para empezar, prueba con",
+    "yourQuestion": "Tu pregunta",
+    "loading": "Buscando la mejor respuesta…",
+    "errorTitle": "Vaya, no he podido responderte",
+    "errorText": "Tu pregunta sigue aquí. Vuelve a intentarlo en unos segundos o, mientras tanto, echa un vistazo a los lugares.",
+    "seePlaces": "Ver los lugares",
+    "cited": "Lugares de esta respuesta",
+    "suggestTitle": "Quizá te interese",
+    "allCategories": "Ver todas las categorías",
+    "answer": {
+      "oneMatch": "Este lugar {{predicates}}:",
+      "manyMatches": "Estos {{count}} lugares {{predicates}}:",
+      "matchesRequest": { "one": "encaja con lo que buscas", "other": "encajan con lo que buscas" },
+      "isAccessible": { "one": "es accesible", "other": "son accesibles" },
+      "isFree": { "one": "es gratis", "other": "son gratis" },
+      "isOpen": { "one": "está abierto {{moment}}", "other": "están abiertos {{moment}}" },
+      "momentNow": "ahora ({{when}})",
+      "openCriterion": "abierto {{moment}}",
+      "or": " ni ",
+      "notUnique": "No hay un único lugar: en realidad son {{count}}:",
+      "aboutNamedPlaces": "Te cuento lo que sé:",
+      "noMatches": "No he encontrado ningún lugar que cumpla todo lo que pides: {{criteria}}.",
+      "unknownTerms": "Lo siento, no tengo información sobre {{terms}}, así que no puedo recomendarte nada sobre eso.",
+      "nothingUnderstood": "No he entendido bien qué buscas. Puedes preguntarme por tipos de lugar (museos, monumentos, rutas…), por sitios accesibles o gratis, o por lo que está abierto un día y a una hora.",
+      "unverified": {
+        "one": "Hay 1 lugar más que podría encajar, pero no puedo confirmarte {{reasons}}, así que no lo incluyo.",
+        "other": "Hay {{count}} lugares más que podrían encajar, pero no puedo confirmarte {{reasons}}, así que no los incluyo."
+      },
+      "reason": {
+        "accessible": { "one": "si es accesible", "other": "si son accesibles" },
+        "price": { "one": "el precio", "other": "el precio" },
+        "hours": { "one": "el horario", "other": "el horario" }
+      },
+      "failed": {
+        "accessible": "no es accesible",
+        "free": "no es gratis",
+        "open": "a esa hora está cerrado",
+        "thatDay": "no abre ese día"
+      },
+      "notConfirmed": {
+        "accessible": "no puedo confirmarte si es accesible",
+        "price": "no puedo confirmarte el precio",
+        "open": "no puedo confirmarte si está abierto a esa hora",
+        "thatDay": "no puedo confirmarte si abre ese día"
+      },
+      "hoursUnpublished": "Horario: no está publicado.",
+      "priceUnpublished": "Precio: no está publicado.",
+      "hoursIncomplete": " (puede que falte algún tramo)."
+    }
+  },
+  "notFound": {
+    "heading": "Página no encontrada",
+    "title": "Esta página no existe",
+    "message": "Puede que el enlace sea antiguo o esté mal escrito.",
+    "goHome": "Ir al inicio"
+  }
+}
