@@ -97,7 +97,7 @@ describe('PlacesListPage (Explorar)', () => {
     );
   });
 
-  it('sin resultados lo dice y ofrece limpiar los filtros', async () => {
+  it('sin resultados lo dice y ofrece preguntar; los filtros se limpian desde su barra', async () => {
     await open('/explorar?category=ruta');
     http.expectOne(isCatalog).flush(TEST_CATALOG);
     http.expectOne(isFiltered).flush([]);
@@ -105,6 +105,11 @@ describe('PlacesListPage (Explorar)', () => {
 
     expect(page.textContent).toContain('No hay lugares con todos estos filtros');
     expect(page.querySelector('ul[aria-label="Resultados"]')).toBeNull();
+    expect(page.querySelector('app-state-panel button')).toBeNull();
+    expect(page.querySelector('app-state-panel a')?.getAttribute('href')).toBe('/asistente');
+    expect(page.querySelector('.filters__summary button')?.textContent?.trim()).toBe(
+      'Limpiar filtros',
+    );
   });
 
   it('si la carga falla, lo dice y permite reintentar', async () => {
