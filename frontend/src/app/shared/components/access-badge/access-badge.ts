@@ -5,36 +5,8 @@ import { TranslatePipe } from '@ngx-translate/core';
 @Component({
   selector: 'app-access-badge',
   imports: [TranslatePipe],
-  template: `<span [class]="classes()">{{ label() | translate }}</span>`,
-  styles: `
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 3px 9px;
-      border-radius: var(--vl-radius-chip);
-      border: 1px solid transparent;
-      font-size: 12px;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-    .badge--ok {
-      background: var(--vl-ok-bg);
-      color: var(--vl-ok-fg);
-    }
-    .badge--no {
-      background: #eef1f4;
-      color: var(--vl-ink-2);
-    }
-    .badge--unknown {
-      background: var(--vl-surface);
-      color: var(--vl-ink-3);
-      border: 1px dashed var(--vl-unknown);
-    }
-    .badge--large {
-      padding: 5px 12px;
-      font-size: 14px;
-    }
-  `,
+  templateUrl: './access-badge.html',
+  styleUrl: './access-badge.css',
 })
 export class AccessBadge {
   readonly accessible = input.required<boolean | null>();

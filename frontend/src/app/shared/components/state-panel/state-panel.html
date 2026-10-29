@@ -1,0 +1,15 @@
+<section
+  class="state"
+  [class.state--error]="tone() === 'error'"
+  [attr.role]="tone() === 'error' ? 'alert' : null"
+  [attr.aria-labelledby]="id"
+>
+  @if (eyebrow()) {
+    <p class="state__eyebrow">{{ eyebrow() }}</p>
+  }
+  <h2 class="state__title" [id]="id">{{ heading() }}</h2>
+  @if (message()) {
+    <p class="state__message">{{ message() }}</p>
+  }
+  <div class="state__actions"><ng-content /></div>
+</section>
