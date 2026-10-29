@@ -187,6 +187,16 @@ FREE_TRIGGERS = _terms(
     "gratis, gratuito, gratuita, gratuitos, gratuitas, sin pagar, sin coste, "
     "free, free of charge, no cost"
 )
+# Negación de una condición: va justo antes, con un verbo opcional en medio («no son accesibles»,
+# «sin accesibilidad», «not free», «aren't accessible»). Si la condición sigue con otras
+# encadenadas («no accesible para silla de ruedas»), la negación abarca toda la cadena. «sin
+# coste» y «no cost» no se tocan: son formas de decir gratis y ya están en FREE_TRIGGERS.
+NEGATIONS = _terms("no, sin, not, non, isn't, aren't")
+NEGATION_VERBS = _terms("es, son, esta, estan, sea, sean, is, are, be")
+CONDITION_CONNECTORS = _terms("para, en, con, de, for, in, by, to")
+# Condiciones que ya se dicen en negativo.
+NOT_ACCESSIBLE_TRIGGERS = _terms("inaccesible, inaccesibles, inaccessible")
+NOT_FREE_TRIGGERS = _terms("de pago, paid")
 # Preguntar si algo está abierto sin decir cuándo se entiende como «ahora».
 OPEN_TRIGGERS = _terms("abierto, abierta, abiertos, abiertas, abre, abren, open, opens")
 NOW_TRIGGERS = _terms("ahora, ahora mismo, en este momento, now, right now, at the moment")
@@ -249,10 +259,15 @@ STOPWORDS = _terms(
     "recomienda, recomiendas, saber, sea, ser, sin, sitio, sitios, sobre, son, sus, tal, tambien, "
     "tenga, tengan, tengo, tiene, tienen, todo, todos, tus, una, unas, uno, unos, valdelumbre, "
     "vamos, ver, visita, visitar, visitas, voy, zona, zonas, "
+    # verbos con los que se pide información («háblame de…», «cuéntame…»): no describen el lugar
+    "busco, buscar, contar, contarme, cuentame, dame, ensename, explica, explicame, explicar, "
+    "habla, hablame, hablar, muestrame, necesito, recomiendame, recomendarme, "
     # inglés
     "about, all, and, any, anything, are, area, around, best, can, could, does, for, from, get, "
     "good, has, have, here, how, include, includes, interesting, its, like, local, many, much, "
     "near, nice, offer, offers, place, places, please, recommend, see, should, some, something, "
     "somewhere, spot, spots, taste, that, the, there, thing, things, this, town, try, visit, want, "
-    "what, where, which, who, will, with, would, you, your"
+    "what, where, which, who, will, with, would, you, your, "
+    # verbos con los que se pide información («tell me about…»)
+    "describe, detail, details, explain, find, give, know, look, looking, need, show, suggest, tell"
 )

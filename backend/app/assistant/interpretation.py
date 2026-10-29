@@ -11,10 +11,15 @@ from datetime import date, datetime, time
 
 from app.assistant.vocabulary import (
     ACCESSIBILITY_TRIGGERS,
+    CONDITION_CONNECTORS,
     FREE_TRIGGERS,
     HOURS_TRIGGERS,
+    NEGATION_VERBS,
+    NEGATIONS,
     NOON,
     NOON_TRIGGERS,
+    NOT_ACCESSIBLE_TRIGGERS,
+    NOT_FREE_TRIGGERS,
     NOW_TRIGGERS,
     OPEN_TRIGGERS,
     PRICE_TRIGGERS,
@@ -62,6 +67,9 @@ class QueryIntent:
     terms: tuple[SearchTerm, ...]
     accessible_only: bool
     free_only: bool
+    not_accessible: bool  # «no accesible»: accesible es false (no basta con que no conste)
+    not_free: bool  # «no gratis»: precio conocido mayor que cero
+    negates_opening: bool  # «¿qué no abre…?»: buscar lo cerrado no está soportado
     open_at: Moment | None
     open_at_is_now: bool  # el momento es «ahora»: la respuesta dice qué hora se ha usado
     open_on: DayQuery | None
@@ -74,9 +82,16 @@ class QueryIntent:
         return (
             self.accessible_only
             or self.free_only
+            or self.not_accessible
+            or self.not_free
             or self.open_at is not None
             or self.open_on is not None
         )
+
+    @property
+    def contradicts_itself(self) -> bool:
+        """Pide una condición y su contraria («accesibles y no accesibles»): nada la cumple."""
+        return (self.accessible_only and self.not_accessible) or (self.free_only and self.not_free)
 
     @property
     def is_empty(self) -> bool:
@@ -89,11 +104,15 @@ def interpret_question(question: str, now: datetime) -> QueryIntent:
     text = _Text(normalize_text(question))
 
     topics = tuple(topic for topic in TOPICS if text.take(topic.triggers))
+    # Las negaciones, antes que las condiciones: si no, «no accesibles» se leería como «accesibles».
+    not_accessible = text.take(NOT_ACCESSIBLE_TRIGGERS) | text.take_negated(ACCESSIBILITY_TRIGGERS)
     accessible_only = text.take(ACCESSIBILITY_TRIGGERS)
+    not_free = text.take(NOT_FREE_TRIGGERS) | text.take_negated(FREE_TRIGGERS)
     free_only = text.take(FREE_TRIGGERS)
     asks_for_hours = text.take(HOURS_TRIGGERS)
     asks_for_price = text.take(PRICE_TRIGGERS)
     presumes_single_result = text.take(UNIQUENESS_TRIGGERS)
+    negates_opening = text.take_negated(OPEN_TRIGGERS)
     asks_if_open = text.take(OPEN_TRIGGERS)
     asks_for_now = text.take(NOW_TRIGGERS)
     asks_for_today = text.take(TODAY_TRIGGERS)
@@ -113,6 +132,9 @@ def interpret_question(question: str, now: datetime) -> QueryIntent:
         terms=_search_terms(text.remaining_words(), question),
         accessible_only=accessible_only,
         free_only=free_only,
+        not_accessible=not_accessible,
+        not_free=not_free,
+        negates_opening=negates_opening,
         open_at=when.open_at,
         open_at_is_now=when.is_now,
         open_on=when.open_on,
@@ -182,9 +204,24 @@ class _Text:
 
     def take(self, phrases: frozenset[str]) -> bool:
         """Retira las frases que aparezcan como palabras completas; dice si había alguna."""
-        # Primero las más largas, para que «silla de ruedas» no se quede en «silla».
-        alternatives = "|".join(re.escape(p) for p in sorted(phrases, key=len, reverse=True))
-        self._remaining, count = re.subn(rf"(?<!\w)(?:{alternatives})(?!\w)", " ", self._remaining)
+        return self._take_pattern(_alternatives(phrases))
+
+    def take_negated(self, phrases: frozenset[str]) -> bool:
+        """Retira una condición negada y las que la sigan encadenadas; dice si había alguna.
+
+        «no son accesibles», «sin accesibilidad», «not wheelchair accessible», «no accesible
+        para silla de ruedas». La negación tiene que ir justo antes: en «¿no hay museos
+        accesibles?» no niega la accesibilidad.
+        """
+        condition = _alternatives(phrases)
+        chained = rf"(?:\s+(?:(?:{_alternatives(CONDITION_CONNECTORS)})\s+)?(?:{condition}))*"
+        return self._take_pattern(
+            rf"(?:{_alternatives(NEGATIONS)})\s+(?:(?:{_alternatives(NEGATION_VERBS)})\s+)?"
+            rf"(?:{condition}){chained}"
+        )
+
+    def _take_pattern(self, pattern: str) -> bool:
+        self._remaining, count = re.subn(rf"(?<!\w)(?:{pattern})(?!\w)", " ", self._remaining)
         return count > 0
 
     def take_weekday(self) -> int | None:
@@ -208,6 +245,12 @@ class _Text:
 
     def remaining_words(self) -> list[str]:
         return _WORD.findall(self._remaining)
+
+
+def _alternatives(phrases: frozenset[str]) -> str:
+    """Alternativas de una expresión regular, las más largas primero: así «silla de ruedas» no se
+    queda en «silla»."""
+    return "|".join(re.escape(p) for p in sorted(phrases, key=len, reverse=True))
 
 
 def _to_time(hour_text: str, minute_text: str | None, suffix: str | None) -> time | None:

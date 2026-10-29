@@ -32,6 +32,8 @@ _WORD = re.compile(r"\w+")
 class Condition(StrEnum):
     ACCESSIBLE = "accesible"
     FREE = "gratis"
+    NOT_ACCESSIBLE = "no accesible"
+    NOT_FREE = "no gratis"
     OPEN = "abierto"
 
 
@@ -93,7 +95,9 @@ class Retriever:
         self._index = tuple(_searchable(poi) for poi in pois)
 
     def retrieve(self, intent: QueryIntent) -> RetrievalResult:
-        if intent.is_empty:
+        # Sin nada que buscar, con condiciones contradictorias o buscando lo cerrado, no hay
+        # ningún punto en el que apoyarse: la respuesta lo explica.
+        if intent.is_empty or intent.contradicts_itself or intent.negates_opening:
             return RetrievalResult(intent, (), (), names_specific_places=False)
 
         unknown_terms = tuple(
@@ -142,6 +146,12 @@ def _verdicts(poi: Poi, intent: QueryIntent) -> Iterator[tuple[Condition, bool |
         yield Condition.ACCESSIBLE, poi.accessible
     if intent.free_only:
         yield Condition.FREE, poi.price.is_free if isinstance(poi.price, PriceRange) else None
+    # Las contrarias tampoco suponen nada: sin el dato, «no accesible» y «no gratis» no constan.
+    if intent.not_accessible:
+        yield Condition.NOT_ACCESSIBLE, None if poi.accessible is None else not poi.accessible
+    if intent.not_free:
+        is_paid = not poi.price.is_free if isinstance(poi.price, PriceRange) else None
+        yield Condition.NOT_FREE, is_paid
     if intent.open_at is not None:
         yield Condition.OPEN, _as_verdict(opening_status(poi.opening_hours, intent.open_at))
     elif intent.open_on is not None:

@@ -9,10 +9,10 @@ from app.assistant.interpretation import DayQuery, interpret_question
 from app.assistant.retrieval import RetrievalResult
 from app.assistant.service import Assistant
 from app.catalog.loader import load_catalog
-from app.catalog.models import Language
+from app.catalog.models import Category, Language
 from app.catalog.normalization import JsonValue, normalize_catalog
 from app.catalog.opening_hours import Moment
-from app.catalog.repository import PoiRepository
+from app.catalog.repository import PoiFilter, PoiRepository
 from app.config import Settings
 from tests.conftest import FIXED_NOW
 from tests.factories import record
@@ -20,10 +20,18 @@ from tests.factories import record
 ES, EN = Language.ES, Language.EN
 MONDAY, SUNDAY = 1, 7
 
+# Del catálogo real: `accesible: false`. poi-011 (`accesible: null`) no está, porque no consta.
+NOT_ACCESSIBLE = ["poi-001", "poi-006", "poi-007", "poi-013", "poi-014", "poi-018"]
+
 
 @pytest.fixture(scope="module")
-def assistant():
-    return Assistant(PoiRepository(load_catalog(Settings().pois_path)), TemplateAnswerWriter())
+def repository():
+    return PoiRepository(load_catalog(Settings().pois_path))
+
+
+@pytest.fixture(scope="module")
+def assistant(repository):
+    return Assistant(repository, TemplateAnswerWriter())
 
 
 def ask(assistant: Assistant, question: str, language: Language = ES) -> tuple[list[str], str]:
@@ -96,6 +104,41 @@ def test_terms_keep_their_original_spelling():
         ("parque", "parque"),
         ("acuatico", "ACUÁTICO"),
     ]
+
+
+@pytest.mark.parametrize(
+    ("question", "not_accessible", "not_free"),
+    [
+        ("¿Qué sitios no son accesibles?", True, False),
+        ("Lugares sin accesibilidad", True, False),
+        ("Which places aren't accessible?", True, False),
+        ("Museos inaccesibles", True, False),
+        ("Museos que no son gratuitos", False, True),
+        ("Museos de pago", False, True),
+    ],
+)
+def test_a_negated_condition_is_not_read_as_the_condition(question, not_accessible, not_free):
+    intent = interpret_question(question, FIXED_NOW)
+
+    assert (intent.not_accessible, intent.not_free) == (not_accessible, not_free)
+    assert not intent.accessible_only
+    assert not intent.free_only
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "¿No hay museos accesibles?",  # la negación no va delante de la condición
+        "Museos sin coste",  # «sin coste» es una forma de decir gratis
+        "Free museums at no cost",
+    ],
+)
+def test_a_negation_that_does_not_negate_the_condition_keeps_it(question):
+    intent = interpret_question(question, FIXED_NOW)
+
+    assert not intent.not_accessible
+    assert not intent.not_free
+    assert intent.accessible_only or intent.free_only
 
 
 # --- Recuperación y respuesta con el catálogo real -----------------------------------------------
@@ -230,6 +273,115 @@ def test_same_question_gives_the_same_answer(assistant):
     second = ask(assistant, question, EN)
 
     assert first == second
+
+
+@pytest.mark.parametrize(
+    ("question", "language", "expected"),
+    [
+        ("¿Qué sitios no son accesibles?", ES, NOT_ACCESSIBLE),
+        ("Lugares sin accesibilidad", ES, NOT_ACCESSIBLE),
+        ("Which places are not accessible?", EN, NOT_ACCESSIBLE),
+        ("Museos no accesibles", ES, ["poi-013"]),
+        ("Museos no accesibles para silla de ruedas", ES, ["poi-013"]),
+        ("Museums that are not wheelchair accessible", EN, ["poi-013"]),
+        # poi-013 cuesta 3 €; poi-003 («gratis») y poi-015 (0) son gratis.
+        ("Museos que no son gratis", ES, ["poi-013"]),
+        ("Museos que no son gratuitos", ES, ["poi-013"]),
+        ("Museums that are not free", EN, ["poi-013"]),
+        # Las afirmativas siguen igual.
+        ("Museos accesibles", ES, ["poi-003", "poi-015"]),
+        ("Museos gratis", ES, ["poi-003", "poi-015"]),
+        ("Museos sin coste", ES, ["poi-003", "poi-015"]),
+        ("¿No hay museos accesibles?", ES, ["poi-003", "poi-015"]),
+    ],
+)
+def test_a_negated_condition_selects_its_opposite(assistant, question, language, expected):
+    cited, _ = ask(assistant, question, language)
+
+    assert cited == expected
+
+
+def test_unknown_data_never_meets_a_negated_condition(assistant):
+    # «no accesible» es `false`: poi-011 (sin datos) no se da por no accesible, y se dice.
+    cited, text = ask(assistant, "¿Qué sitios no son accesibles?")
+
+    assert "poi-011" not in cited
+    assert "(no accesible):" in text
+    assert "De 1 lugar más no consta si es accesible" in text
+
+    # «no gratis» es un precio conocido mayor que cero: poi-016 (precio desconocido) no cuenta;
+    # poi-010 y poi-017 son gratis. Ningún servicio cumple.
+    cited, text = ask(assistant, "¿Qué servicios no son gratis?")
+
+    assert cited == []
+    assert "De 1 lugar más no consta el precio" in text
+
+
+@pytest.mark.parametrize(
+    ("question", "language", "contradiction"),
+    [
+        ("Museos accesibles y no accesibles", ES, "que sea accesible y que no lo sea"),
+        ("Museos gratis y de pago", ES, "que sea gratis y que no lo sea"),
+        ("Museums that are accessible and not accessible", EN, "both accessible and not"),
+    ],
+)
+def test_contradictory_conditions_are_pointed_out_instead_of_keeping_one(
+    assistant, question, language, contradiction
+):
+    cited, text = ask(assistant, question, language)
+
+    assert cited == []
+    assert contradiction in text
+
+
+def test_asking_for_what_is_closed_is_declined_instead_of_answered_as_open(assistant):
+    # Sin soporte para buscar lo cerrado, se dice; antes se respondía con lo abierto.
+    cited, text = ask(assistant, "¿Qué museos no abren el lunes?")
+
+    assert cited == []
+    assert text.startswith("No puedo buscar lugares por lo que no abren")
+
+
+@pytest.mark.parametrize(
+    ("question", "language", "expected"),
+    [
+        ("Tell me about the castle", EN, ["poi-001"]),
+        ("Háblame de la Casa de los Tapices", ES, ["poi-013"]),
+        ("Tell me about the Tapestry House", EN, ["poi-013"]),
+        ("Cuéntame algo del Puente Romano", ES, ["poi-011"]),
+    ],
+)
+def test_asking_to_be_told_about_a_place_finds_it(assistant, question, language, expected):
+    cited, _ = ask(assistant, question, language)
+
+    assert cited == expected
+
+
+def test_conversational_verbs_do_not_hide_words_with_content(assistant):
+    cited, text = ask(assistant, "Háblame de museos con tirolina")
+
+    assert cited == []
+    assert "«tirolina»" in text
+    assert "Háblame" not in text
+
+
+@pytest.mark.parametrize(
+    ("question", "poi_filter"),
+    [
+        ("Lugares accesibles", PoiFilter(accessible=True)),
+        ("¿Qué sitios no son accesibles?", PoiFilter(accessible=False)),
+        ("Museos accesibles", PoiFilter(category=Category.MUSEUM, accessible=True)),
+        ("¿Qué está abierto un lunes a las 12:00?", PoiFilter(open_at=Moment(MONDAY, time(12)))),
+        ("¿Qué está abierto el domingo a las 12:00?", PoiFilter(open_at=Moment(SUNDAY, time(12)))),
+    ],
+)
+def test_a_question_cites_exactly_what_the_equivalent_api_filter_returns(
+    assistant, repository, question, poi_filter
+):
+    # Ni de menos ni de más: un punto que no cumple la condición no se cita.
+    cited, _ = ask(assistant, question)
+
+    assert cited == [poi.id for poi in repository.find(poi_filter)]
 
 
 # --- Datos maliciosos y redactores sustituibles ------------------------------------------------

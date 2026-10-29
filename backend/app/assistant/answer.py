@@ -28,6 +28,8 @@ class AnswerWriter(Protocol):
 @dataclass(frozen=True)
 class _Phrases:
     nothing_understood: str
+    contradictory: str  # «accesibles y no accesibles»
+    negated_opening: str  # «¿qué no abre el lunes?»
     unknown_terms: str
     no_matches: str
     one_match: str
@@ -42,6 +44,8 @@ class _Phrases:
     open_on: str
     accessible: str
     free: str
+    not_accessible: str
+    not_free: str
     failed: Mapping[Condition, str]
     unverified: Mapping[Condition, str]
     unverified_reason: Mapping[Condition, str]
@@ -72,6 +76,14 @@ _PHRASES = {
             "preguntar por tipos de lugar (museos, monumentos, rutas…), por lugares accesibles "
             "o gratuitos, o por lo que está abierto un día y a una hora."
         ),
+        contradictory=(
+            "Me pides a la vez que sea {conditions} y que no lo sea, así que no puedo recomendarte "
+            "nada. Dime cuál de las dos cosas buscas."
+        ),
+        negated_opening=(
+            "No puedo buscar lugares por lo que no abren o están cerrados. Pregúntame qué está "
+            "abierto un día y a una hora."
+        ),
         unknown_terms=(
             "El catálogo no tiene información sobre {terms}, así que no puedo recomendarte "
             "nada sobre eso."
@@ -92,19 +104,27 @@ _PHRASES = {
         open_on="abierto el {weekday}",
         accessible="accesible",
         free="gratis",
+        not_accessible="no accesible",
+        not_free="de pago",
         failed={
             Condition.ACCESSIBLE: "no es accesible",
             Condition.FREE: "no es gratis",
+            Condition.NOT_ACCESSIBLE: "es accesible",
+            Condition.NOT_FREE: "es gratis",
             Condition.OPEN: "está cerrado en ese momento",
         },
         unverified={
             Condition.ACCESSIBLE: "no consta si es accesible",
             Condition.FREE: "no consta el precio",
+            Condition.NOT_ACCESSIBLE: "no consta si es accesible",
+            Condition.NOT_FREE: "no consta el precio",
             Condition.OPEN: "no consta si abre en ese momento",
         },
         unverified_reason={
             Condition.ACCESSIBLE: "si es accesible",
             Condition.FREE: "el precio",
+            Condition.NOT_ACCESSIBLE: "si es accesible",
+            Condition.NOT_FREE: "el precio",
             Condition.OPEN: "el horario",
         },
         closed_that_day="no abre ese día",
@@ -132,6 +152,14 @@ _PHRASES = {
             "can ask about types of place (museums, monuments, walks…), accessible or free "
             "places, or what is open on a given day and time."
         ),
+        contradictory=(
+            "You're asking for places that are both {conditions} and not {conditions}, so I can't "
+            "recommend anything. Tell me which one you mean."
+        ),
+        negated_opening=(
+            "I can't search for places by when they are closed. Ask me what is open on a given day "
+            "and time."
+        ),
         unknown_terms=(
             "The catalogue has no information about {terms}, so I can't recommend anything "
             "about that."
@@ -153,19 +181,27 @@ _PHRASES = {
         open_on="open on {weekday}",
         accessible="accessible",
         free="free",
+        not_accessible="not accessible",
+        not_free="not free",
         failed={
             Condition.ACCESSIBLE: "is not accessible",
             Condition.FREE: "is not free",
+            Condition.NOT_ACCESSIBLE: "is accessible",
+            Condition.NOT_FREE: "is free",
             Condition.OPEN: "is closed at that time",
         },
         unverified={
             Condition.ACCESSIBLE: "the catalogue doesn't state whether it is accessible",
             Condition.FREE: "the catalogue doesn't state the price",
+            Condition.NOT_ACCESSIBLE: "the catalogue doesn't state whether it is accessible",
+            Condition.NOT_FREE: "the catalogue doesn't state the price",
             Condition.OPEN: "the catalogue doesn't state whether it is open at that time",
         },
         unverified_reason={
             Condition.ACCESSIBLE: "whether they are accessible",
             Condition.FREE: "the price",
+            Condition.NOT_ACCESSIBLE: "whether they are accessible",
+            Condition.NOT_FREE: "the price",
             Condition.OPEN: "the opening hours",
         },
         closed_that_day="is not open that day",
@@ -207,6 +243,10 @@ class _Composer:
     def compose(self) -> str:
         if self.intent.is_empty:
             return self.phrases.nothing_understood
+        if self.intent.negates_opening:
+            return self.phrases.negated_opening
+        if self.intent.contradicts_itself:
+            return self.phrases.contradictory.format(conditions=self._contradicted())
         matches = self.result.matches
         lines = [self._opening(matches)]
         lines += [
@@ -243,8 +283,22 @@ class _Composer:
             parts.append(p.accessible)
         if self.intent.free_only:
             parts.append(p.free)
+        if self.intent.not_accessible:
+            parts.append(p.not_accessible)
+        if self.intent.not_free:
+            parts.append(p.not_free)
         parts += self._when()
         return "; ".join(parts)
+
+    def _contradicted(self) -> str:
+        """Las condiciones que se piden a la vez en positivo y en negativo: «accesible»."""
+        p = self.phrases
+        conditions = []
+        if self.intent.accessible_only and self.intent.not_accessible:
+            conditions.append(p.accessible)
+        if self.intent.free_only and self.intent.not_free:
+            conditions.append(p.free)
+        return _join(conditions, p.list_and)
 
     def _when(self) -> list[str]:
         p = self.phrases
