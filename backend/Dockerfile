@@ -17,7 +17,6 @@ RUN pip install -r requirements.txt
 COPY backend/app ./app
 COPY datos /srv/datos
 
-# Sin privilegios de root en ejecución.
 RUN useradd --create-home --uid 10001 api
 USER api
 

@@ -1,5 +1,3 @@
-"""Utilidades de texto: normalización para comparar y detección de instrucciones incrustadas."""
-
 import re
 import unicodedata
 

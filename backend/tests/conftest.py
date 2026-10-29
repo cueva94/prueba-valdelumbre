@@ -1,5 +1,3 @@
-"""Fixtures compartidas: la API con el catálogo real y un reloj fijo."""
-
 from collections.abc import Iterator
 from datetime import datetime
 

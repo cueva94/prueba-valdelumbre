@@ -34,7 +34,6 @@ export const TOPICS: readonly Topic[] = [
   questionKey: `questions.topics.${topic}.question`,
 }));
 
-/** Preguntas rápidas de la ficha de un lugar: el asistente las responde sobre ese lugar. */
 export const QUICK_QUESTIONS: readonly string[] = [
   'questions.aboutPlace.hours',
   'questions.aboutPlace.accessible',

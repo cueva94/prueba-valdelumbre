@@ -1,4 +1,3 @@
-/* Como en el resto de pantallas: el fondo de la página y el contenido en una caja blanca. */
 .hero {
   max-width: var(--vl-page);
   margin: 0 auto;

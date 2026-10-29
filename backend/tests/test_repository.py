@@ -1,5 +1,3 @@
-"""Consulta del catálogo: filtros individuales y combinados, y registros inexistentes."""
-
 from collections.abc import Iterable
 from datetime import time
 
@@ -68,7 +66,7 @@ def test_filter_by_category():
     ("accessible", "expected"),
     [
         (True, ["museum-yes", "route-morning", "route-no-hours"]),
-        (False, ["museum-no"]),  # la accesibilidad desconocida no cuenta como «no accesible»
+        (False, ["museum-no"]),
     ],
 )
 def test_filter_by_accessibility_never_guesses_unknown_values(accessible, expected):
@@ -84,7 +82,7 @@ def test_filter_by_opening_excludes_closed_and_unknown():
 
     assert "route-morning" in open_at_10
     assert "route-morning" not in open_at_15
-    assert "route-no-hours" not in open_at_10  # horario desconocido: no se afirma que abra
+    assert "route-no-hours" not in open_at_10
 
 
 def test_filters_are_combined():
@@ -101,5 +99,5 @@ def test_get_returns_none_for_unknown_and_excluded_ids():
     )
 
     assert duplicated.get("kept") is not None
-    assert duplicated.get("dropped") is None  # excluido por duplicado
+    assert duplicated.get("dropped") is None
     assert duplicated.get("does-not-exist") is None

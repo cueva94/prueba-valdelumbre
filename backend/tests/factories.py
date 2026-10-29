@@ -12,7 +12,6 @@ KM_PER_DEGREE_OF_LATITUDE = 2 * math.pi * 6371.0 / 360
 
 
 def latitude_at(km_north: float) -> float:
-    """Latitud del punto situado exactamente a esa distancia al norte del centro."""
     return TOWN_LAT + km_north / KM_PER_DEGREE_OF_LATITUDE
 
 

@@ -1,7 +1,7 @@
-"""Efecto de la normalización sobre los datos reales (DATOS.md → Inventario de defectos).
+"""Efecto de la normalización sobre los datos reales.
 
 Las reglas se prueban de forma general en test_normalization.py; aquí se documenta qué hacen con
-el catálogo entregado y que cada defecto del inventario produce su incidencia.
+el catálogo entregado y que cada defecto produce su incidencia.
 """
 
 from datetime import time

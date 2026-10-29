@@ -12,7 +12,6 @@ from app.catalog.models import Category, Language
 
 
 def _terms(text: str) -> frozenset[str]:
-    """«museo, museos, aire libre» → {"museo", "museos", "aire libre"}."""
     return frozenset(term.strip() for term in text.split(",") if term.strip())
 
 
@@ -176,8 +175,6 @@ TOPICS: tuple[Topic, ...] = (
 # Los lugares concretos («el castillo», «la ermita», «the church») no son temas: se buscan por
 # su nombre, que está en los dos idiomas, y así la respuesta habla de ese lugar en particular.
 
-# --- Condiciones que se comprueban con datos estructurados ------------------------------------
-
 ACCESSIBILITY_TRIGGERS = _terms(
     "accesible, accesibles, accesibilidad, silla de ruedas, sillas de ruedas, movilidad reducida, "
     "minusvalido, minusvalida, discapacidad, adaptado, adaptada, adaptados, adaptadas, "
@@ -194,7 +191,6 @@ FREE_TRIGGERS = _terms(
 NEGATIONS = _terms("no, sin, not, non, isn't, aren't")
 NEGATION_VERBS = _terms("es, son, esta, estan, sea, sean, is, are, be")
 CONDITION_CONNECTORS = _terms("para, en, con, de, for, in, by, to")
-# Condiciones que ya se dicen en negativo.
 NOT_ACCESSIBLE_TRIGGERS = _terms("inaccesible, inaccesibles, inaccessible")
 NOT_FREE_TRIGGERS = _terms("de pago, paid")
 # Preguntar si algo está abierto sin decir cuándo se entiende como «ahora».
@@ -247,7 +243,6 @@ WEEKDAY_NAMES: MappingProxyType[Language, tuple[str, ...]] = MappingProxyType(
 # relleno («ofrecen», «probar») y los calificativos genéricos de lugar («zona», «local»): en un
 # catálogo de un solo pueblo no distinguen un punto de otro.
 STOPWORDS = _terms(
-    # español
     "al, algo, algun, alguna, algunas, alguno, algunos, alli, aqui, area, asi, cada, como, con, "
     "conocer, cosa, cosas, cual, cuales, cuando, decir, degustar, del, desde, dia, dias, dime, "
     "dispone, disponen, donde, ella, entre, esa, ese, eso, esta, estan, estar, estas, este, esto, "
@@ -262,7 +257,6 @@ STOPWORDS = _terms(
     # verbos con los que se pide información («háblame de…», «cuéntame…»): no describen el lugar
     "busco, buscar, contar, contarme, cuentame, dame, ensename, explica, explicame, explicar, "
     "habla, hablame, hablar, muestrame, necesito, recomiendame, recomendarme, "
-    # inglés
     "about, all, and, any, anything, are, area, around, best, can, could, does, for, from, get, "
     "good, has, have, here, how, include, includes, interesting, its, like, local, many, much, "
     "near, nice, offer, offers, place, places, please, recommend, see, should, some, something, "

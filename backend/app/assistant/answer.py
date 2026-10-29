@@ -28,8 +28,8 @@ class AnswerWriter(Protocol):
 @dataclass(frozen=True)
 class _Phrases:
     nothing_understood: str
-    contradictory: str  # «accesibles y no accesibles»
-    negated_opening: str  # «¿qué no abre el lunes?»
+    contradictory: str
+    negated_opening: str
     unknown_terms: str
     no_matches: str
     one_match: str
@@ -49,7 +49,7 @@ class _Phrases:
     failed: Mapping[Condition, str]
     unverified: Mapping[Condition, str]
     unverified_reason: Mapping[Condition, str]
-    closed_that_day: str  # «¿abre el domingo?»: un día sin hora
+    closed_that_day: str
     unverified_that_day: str
     always_open: str
     hours_unknown: str
@@ -291,7 +291,6 @@ class _Composer:
         return "; ".join(parts)
 
     def _contradicted(self) -> str:
-        """Las condiciones que se piden a la vez en positivo y en negativo: «accesible»."""
         p = self.phrases
         conditions = []
         if self.intent.accessible_only and self.intent.not_accessible:
@@ -420,7 +419,6 @@ class _Composer:
 
 
 def _join(items: list[str], last_separator: str) -> str:
-    """«a, b y c»."""
     if len(items) <= 1:
         return "".join(items)
     return f"{', '.join(items[:-1])}{last_separator}{items[-1]}"

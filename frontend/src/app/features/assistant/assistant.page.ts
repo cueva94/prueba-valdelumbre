@@ -9,7 +9,6 @@ import { humanizeAnswer } from '../../core/utils/answer-text';
 import { AskBox } from '../../shared/components/ask-box/ask-box';
 import { PoiCard } from '../../shared/components/poi-card/poi-card';
 
-/** Bloque de la respuesta: un párrafo o una lista (las líneas que empiezan por «- »). */
 export type AnswerBlock = { kind: 'paragraph'; text: string } | { kind: 'list'; items: string[] };
 
 const LIST_ITEM = '- ';
@@ -26,14 +25,12 @@ const LIST_ITEM = '- ';
   styleUrl: './assistant.page.css',
 })
 export class AssistantPage {
-  /** Parámetro `?q=` de la URL. */
   readonly q = input<string>();
 
   private readonly router = inject(Router);
   private readonly language = inject(LanguageService);
 
   protected readonly question = computed(() => this.q()?.trim() ?? '');
-  /** Texto de la caja: empieza con la pregunta actual y el usuario puede editarlo. */
   protected readonly draft = linkedSignal(() => this.question());
   protected readonly answer = inject(AssistantService).ask(this.question);
   protected readonly topics = TOPICS;
@@ -59,7 +56,6 @@ export class AssistantPage {
     void this.router.navigate(['/asistente'], { queryParams: { q: question } });
   }
 
-  /** Pregunta de ejemplo (clave de traducción), en el idioma activo. */
   protected askExample(key: string): void {
     this.ask(this.language.t(key));
   }

@@ -27,7 +27,6 @@ import { StatePanel } from '../../shared/components/state-panel/state-panel';
 /** Lugares por tanda en la lista de Inicio: dos filas de tres. */
 const PLACES_PAGE_SIZE = 6;
 
-/** Inicio: pregunta al asistente, entrada por categorías y todos los lugares en el mapa. */
 @Component({
   selector: 'app-home-page',
   imports: [RouterLink, TranslatePipe, AskBox, CategoryIcon, PoiCard, PoiMap, StatePanel],
@@ -69,7 +68,6 @@ export class HomePage {
     const id = this.selectedId();
     return this.mapPois().some((poi) => poi.id === id) ? id : null;
   });
-  /** El mapa muestra todos; la lista, por tandas. Al cambiar de categoría vuelve a la primera. */
   private readonly visibleCount = linkedSignal({
     source: this.mapCategory,
     computation: () => PLACES_PAGE_SIZE,
@@ -93,7 +91,6 @@ export class HomePage {
     void this.router.navigate(['/asistente'], { queryParams: { q: question } });
   }
 
-  /** «Ver en el mapa»: selecciona la chincheta y lleva el foco (y la vista) al mapa. */
   protected locate(id: string): void {
     this.selectedId.set(id);
     this.map()?.focusPin(id);

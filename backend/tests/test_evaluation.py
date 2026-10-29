@@ -1,6 +1,3 @@
-"""Script de evaluación: criterio de acierto, las seis preguntas oficiales y, aparte, las preguntas
-de regresión internas."""
-
 import json
 import threading
 import time
@@ -154,7 +151,6 @@ def api_url() -> Iterator[str]:
 
 
 def test_cli_evaluates_the_official_questions_over_http(api_url, capsys):
-    # El mismo camino que `python -m app.evaluation`: HTTP real, no TestClient.
     exit_code = main(["--url", api_url])
 
     assert exit_code == EXIT_ALL_PASSED

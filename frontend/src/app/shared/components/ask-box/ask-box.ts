@@ -17,7 +17,6 @@ import { LanguageService } from '../../../core/services/language.service';
 
 let nextId = 0;
 
-/** Caja de pregunta al asistente, con validación accesible y temas que rellenan la pregunta. */
 @Component({
   selector: 'app-ask-box',
   imports: [TranslatePipe],

@@ -1,5 +1,3 @@
-"""Utilidades para los comandos de consola (informe del catálogo y evaluación)."""
-
 import io
 import sys
 

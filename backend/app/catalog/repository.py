@@ -42,5 +42,4 @@ class PoiRepository:
         return self._by_id.get(poi_id)
 
     def find(self, poi_filter: PoiFilter = NO_FILTER) -> tuple[Poi, ...]:
-        """Los puntos que cumplen el filtro, en el orden del catálogo."""
         return tuple(poi for poi in self._pois if poi_filter.matches(poi))

@@ -79,7 +79,6 @@
   color: var(--vl-accent);
 }
 
-/* Lugar citado por el asistente: toda la tarjeta es un enlace a la ficha. */
 .card--cited {
   gap: 10px;
   text-decoration: none;

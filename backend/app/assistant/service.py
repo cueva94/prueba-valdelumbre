@@ -1,5 +1,3 @@
-"""Caso de uso «preguntar»: interpretar, recuperar y redactar."""
-
 from dataclasses import dataclass
 from datetime import datetime
 

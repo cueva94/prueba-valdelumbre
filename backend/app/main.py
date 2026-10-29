@@ -1,5 +1,3 @@
-"""Punto de entrada de la API del asistente turístico de Valdelumbre."""
-
 from fastapi import FastAPI
 
 from app.api.routes import router
@@ -27,7 +25,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "que hay en él, citando los ids de los puntos en los que se apoya."
         ),
     )
-    # Inmutables y sin estado entre peticiones: se comparten con seguridad.
     app.state.repository = repository
     app.state.assistant = Assistant(repository, TemplateAnswerWriter())
     app.include_router(router)

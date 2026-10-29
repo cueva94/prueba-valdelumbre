@@ -20,7 +20,6 @@ export interface DayRow {
   isToday: boolean;
 }
 
-/** Ni abierto siempre ni franjas: la ficha no publica horario. */
 export function isHoursUnknown(hours: OpeningHours): boolean {
   return !hours.siempre_abierto && hours.franjas.length === 0;
 }
@@ -68,13 +67,11 @@ export function weeklySchedule(hours: OpeningHours, today: number, texts: Texts)
   });
 }
 
-/** La temporada de todas las franjas, si es la misma para todas. */
 export function sharedSeason(hours: OpeningHours): Season | null {
   const keys = new Set(hours.franjas.map((slot) => seasonKey(slot.temporada)));
   return keys.size === 1 ? hours.franjas[0].temporada : null;
 }
 
-/** Temporadas distintas de las franjas del horario. */
 export function seasonsOf(hours: OpeningHours): Season[] {
   const seasons = new Map<string, Season>();
   for (const slot of hours.franjas) {
@@ -114,12 +111,10 @@ export function seasonMonths(hours: OpeningHours): boolean[] {
   return months;
 }
 
-/** «Lunes»… «Domingo» / «Monday»… «Sunday». */
 export function weekdayNames(texts: Texts): string[] {
   return WEEKDAYS.map((weekday) => weekdayName(weekday, texts));
 }
 
-/** Nombre del mes (enero = 0) y su inicial, para la barra de meses de la temporada. */
 export function months(texts: Texts): { name: string; initial: string }[] {
   return MONTHS.map((month) => ({
     name: formatDate(Date.UTC(2024, month, 15), { month: 'long' }, texts),
@@ -160,7 +155,6 @@ function formatDate(time: number, options: Intl.DateTimeFormatOptions, texts: Te
   return new Intl.DateTimeFormat(texts.locale(), { ...options, timeZone: 'UTC' }).format(time);
 }
 
-/** «a, b y c» / «a, b and c». */
 function listOf(items: string[], texts: Texts): string {
   return new Intl.ListFormat(texts.locale(), { type: 'conjunction' }).format(items);
 }

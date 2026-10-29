@@ -22,7 +22,6 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(),
-    // Los parámetros de la ruta y de la URL llegan a las páginas como inputs.
     provideRouter(
       routes,
       withComponentInputBinding(),

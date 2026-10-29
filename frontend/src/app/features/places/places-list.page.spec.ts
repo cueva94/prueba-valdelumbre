@@ -49,7 +49,6 @@ describe('PlacesListPage (Explorar)', () => {
   const cardNames = (page: HTMLElement) =>
     [...page.querySelectorAll('app-poi-card h2')].map((name) => name.textContent?.trim());
 
-  /** Usa la barra de filtros como el visitante y devuelve la URL a la que lleva. */
   async function urlAfter(action: () => void): Promise<string> {
     const router = TestBed.inject(Router);
     const navigated = firstValueFrom(

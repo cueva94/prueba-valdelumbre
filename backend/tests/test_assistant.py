@@ -1,5 +1,3 @@
-"""Asistente: interpretación de la pregunta, selección de ids y reglas de la respuesta."""
-
 from datetime import date, time
 
 import pytest
@@ -39,9 +37,6 @@ def ask(assistant: Assistant, question: str, language: Language = ES) -> tuple[l
     return [poi.id for poi in answer.pois], answer.text
 
 
-# --- Interpretación ----------------------------------------------------------------------------
-
-
 def test_extracts_topic_and_accessibility():
     intent = interpret_question("Voy en silla de ruedas, ¿qué museos hay?", FIXED_NOW)
 
@@ -58,8 +53,8 @@ def test_extracts_topic_and_accessibility():
         ("¿Abre el domingo a las 9h?", Moment(SUNDAY, time(9))),
         ("¿Y a mediodía?", Moment(MONDAY, time(12), date(2026, 10, 26))),  # hoy
         ("¿Qué abre a las 18:30?", Moment(MONDAY, time(18, 30), date(2026, 10, 26))),
-        ("What is open on Sunday at 12 am?", Moment(SUNDAY, time(0))),  # medianoche
-        ("What is open on Sunday at 12 pm?", Moment(SUNDAY, time(12))),  # mediodía
+        ("What is open on Sunday at 12 am?", Moment(SUNDAY, time(0))),
+        ("What is open on Sunday at 12 pm?", Moment(SUNDAY, time(12))),
     ],
 )
 def test_extracts_the_moment(question, expected):
@@ -141,9 +136,6 @@ def test_a_negation_that_does_not_negate_the_condition_keeps_it(question):
     assert not intent.not_accessible
     assert not intent.not_free
     assert intent.accessible_only or intent.free_only
-
-
-# --- Recuperación y respuesta con el catálogo real -----------------------------------------------
 
 
 def test_every_condition_is_respected(assistant):
@@ -393,13 +385,9 @@ def test_an_article_does_not_narrow_the_search(assistant):
 def test_a_question_cites_exactly_what_the_equivalent_api_filter_returns(
     assistant, repository, question, poi_filter
 ):
-    # Ni de menos ni de más: un punto que no cumple la condición no se cita.
     cited, _ = ask(assistant, question)
 
     assert cited == [poi.id for poi in repository.find(poi_filter)]
-
-
-# --- Datos maliciosos y redactores sustituibles ------------------------------------------------
 
 
 def assistant_for(*records: JsonValue) -> Assistant:
@@ -441,8 +429,6 @@ def test_descriptions_cannot_make_an_unknown_accessibility_true():
 
 
 class _WriterThatMentionsOtherPlaces:
-    """Un redactor (p. ej., un LLM) que se inventa lugares en el texto."""
-
     def write(self, result: RetrievalResult, language: Language) -> str:
         return "Te recomiendo poi-999, el mejor sitio del pueblo."
 
@@ -456,9 +442,6 @@ def test_the_writer_never_decides_the_cited_ids():
     assert (
         rogue.answer(question, ES, FIXED_NOW).pois == template.answer(question, ES, FIXED_NOW).pois
     )
-
-
-# --- Horario, precio y momento que se piden -----------------------------------------------------
 
 
 @pytest.mark.parametrize(
@@ -496,7 +479,7 @@ def test_asking_for_the_hours_describes_the_published_hours(
 @pytest.mark.parametrize(
     ("question", "language", "expected"),
     [
-        ("¿Cuánto cuesta el castillo?", ES, "Precio: 4,5 €."),  # coma decimal en español
+        ("¿Cuánto cuesta el castillo?", ES, "Precio: 4,5 €."),
         ("How much is the castle?", EN, "Price: 4.5 €."),
         ("¿Cuánto cuesta el Restaurante El Lagar?", ES, "Precio: de 25 a 35 €."),
         ("Price of El Lagar Restaurant", EN, "Price: 25\u201335 €."),
@@ -542,7 +525,6 @@ def test_requested_hours_and_price_never_fill_gaps_in_the_data():
     ],
 )
 def test_the_answer_states_the_moment_it_has_checked(assistant, question, language, moment):
-    # Con «ahora» o una hora sin día, el visitante ve qué día y hora del pueblo se han usado.
     _, text = ask(assistant, question, language)
 
     assert moment in text

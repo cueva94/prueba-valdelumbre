@@ -37,7 +37,6 @@ type QueryChanges = Partial<Record<'category' | 'accessible' | 'open', string | 
   styleUrl: './places-list.page.css',
 })
 export class PlacesListPage {
-  /** Parámetros de la URL, enlazados por el router. */
   readonly category = input<string>();
   readonly accessible = input<string>();
   readonly open = input<string>();
@@ -76,7 +75,6 @@ export class PlacesListPage {
   private readonly filtered = this.poiService.list(() =>
     this.hasFilters() ? this.filters() : undefined,
   );
-  /** El recurso que alimenta la lista: el filtrado o, sin filtros, el catálogo. */
   protected readonly results = computed(() => (this.hasFilters() ? this.filtered : this.catalog));
 
   protected readonly categories = CATEGORIES;
@@ -188,13 +186,11 @@ export class PlacesListPage {
     }
   }
 
-  /** «Ver en el mapa» desde la lista: selecciona la chincheta y le pasa el foco. */
   protected locate(id: string): void {
     this.selectedId.set(id);
     this.map()?.focusPin(id);
   }
 
-  /** Chincheta pulsada en el mapa: resalta su tarjeta y la hace visible en la lista. */
   protected onMapSelection(id: string | null): void {
     this.selectedId.set(id);
     if (id) {

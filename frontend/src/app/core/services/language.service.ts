@@ -8,7 +8,6 @@ import { PreferencesStorage } from '../persistence/preferences-storage.service';
 import { Texts, TranslationParams } from '../utils/texts';
 
 export const DEFAULT_LANGUAGE: Language = 'es';
-/** Formatos regionales de cada idioma: fechas, días, listas y precios. */
 const LOCALES: Record<Language, string> = { es: 'es-ES', en: 'en-GB' };
 
 /**
@@ -26,7 +25,6 @@ export class LanguageService implements Texts {
   readonly current = this.language.asReadonly();
   readonly locale = computed(() => LOCALES[this.language()]);
 
-  /** Al arrancar: el idioma guardado o, si no lo hay o no es válido, el español. */
   init(): Promise<void> {
     return this.use(this.preferences.language() ?? DEFAULT_LANGUAGE);
   }
@@ -51,7 +49,6 @@ export class LanguageService implements Texts {
     return String(this.translate.instant(key, params));
   }
 
-  /** `key.one` o `key.other` según `count`, con `{{count}}` disponible en el texto. */
   plural(key: string, count: number, params?: TranslationParams): string {
     return this.t(`${key}.${count === 1 ? 'one' : 'other'}`, { count, ...params });
   }

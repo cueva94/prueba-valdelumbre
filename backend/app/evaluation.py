@@ -133,7 +133,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         cases = load_cases(arguments.casos)
         results = evaluate(cases, http_asker(arguments.url))
     except (OSError, ValidationError, ValueError) as error:
-        # OSError incluye URLError (API no disponible) y un fichero de casos inexistente.
         print(f"No se puede ejecutar la evaluación: {error}", file=sys.stderr)
         return EXIT_CANNOT_RUN
 

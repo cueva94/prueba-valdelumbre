@@ -125,7 +125,6 @@ describe('PlaceDetailPage (Ficha)', () => {
       ...CASTLE,
       horario: {
         siempre_abierto: false,
-        // En el original había alguna franja más que no se pudo interpretar.
         incompleto: true,
         franjas: [{ dias: [6, 7], abre: '10:00', cierra: '14:00', temporada: null }],
       },

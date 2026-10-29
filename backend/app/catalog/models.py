@@ -26,8 +26,6 @@ class Category(StrEnum):
 
 
 class Defect(StrEnum):
-    """Tipos de defecto. Los códigos son los del inventario de DATOS.md."""
-
     EMBEDDED_INSTRUCTION = "D1"
     DUPLICATE = "D2"
     COORDINATES = "D3"
@@ -50,7 +48,7 @@ class LocalizedText:
 @dataclass(frozen=True)
 class BilingualText:
     es: str
-    en: str | None  # None: sin traducción
+    en: str | None
 
     def in_language(self, language: Language) -> LocalizedText:
         """Texto en el idioma pedido o, si falta la traducción, en español (nunca se inventa)."""
@@ -140,8 +138,6 @@ class Poi:
 
 @dataclass(frozen=True)
 class Incident:
-    """Problema encontrado en un registro y qué se ha hecho con él."""
-
     defect: Defect
     poi_id: str | None
     field: str

@@ -38,9 +38,9 @@ SUMMER_ONLY = OpeningHours(
         (MONDAY, time(10, 0), OPEN),  # la apertura está incluida
         (MONDAY, time(13, 59), OPEN),
         (MONDAY, time(14, 0), CLOSED),  # el cierre no está incluido
-        (MONDAY, time(15, 30), CLOSED),  # entre turnos
-        (SATURDAY, time(17, 0), OPEN),  # segundo turno
-        (SUNDAY, time(12, 0), CLOSED),  # día no incluido
+        (MONDAY, time(15, 30), CLOSED),
+        (SATURDAY, time(17, 0), OPEN),
+        (SUNDAY, time(12, 0), CLOSED),
     ],
 )
 def test_split_shift(weekday, hour, expected):
@@ -52,7 +52,7 @@ def test_weekdays_are_iso_and_1_is_monday():
         always_open=False,
         slots=(TimeSlot(weekdays=frozenset({2, 3, 4, 5, 6, 7}), opens=time(10), closes=time(18)),),
     )
-    monday_noon = Moment.from_datetime(datetime(2026, 10, 26, 12, 0))  # lunes 26/10/2026
+    monday_noon = Moment.from_datetime(datetime(2026, 10, 26, 12, 0))
 
     assert monday_noon.weekday == MONDAY
     assert opening_status(closed_on_mondays, monday_noon) == CLOSED
@@ -95,8 +95,6 @@ def test_season_crossing_the_new_year(day, included):
 
     assert winter.includes(day) is included
 
-
-# --- Franjas que cruzan la medianoche --------------------------------------------------------
 
 # Viernes y sábado de 20:00 a 02:00: la madrugada pertenece a la noche anterior.
 WEEKEND_NIGHTS = OpeningHours(
@@ -153,19 +151,12 @@ def test_season_of_a_night_slot_is_checked_on_the_day_it_started():
     assert opening_status(summer_nights, june_first) == CLOSED
 
 
-# --- Horarios incompletos --------------------------------------------------------------------
-
-
 def test_incomplete_hours_never_claim_closed():
-    # Mismo turno partido, pero en el original había alguna franja que no se pudo interpretar.
     incomplete = OpeningHours(always_open=False, slots=SPLIT_SHIFT.slots, incomplete=True)
 
     assert opening_status(incomplete, Moment(MONDAY, time(12))) == OPEN
     assert opening_status(incomplete, Moment(MONDAY, time(15, 30))) == UNKNOWN
     assert opening_status(SPLIT_SHIFT, Moment(MONDAY, time(15, 30))) == CLOSED
-
-
-# --- Apertura en algún momento del día -------------------------------------------------------
 
 
 @pytest.mark.parametrize(

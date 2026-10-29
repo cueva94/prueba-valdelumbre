@@ -123,7 +123,6 @@ def ask(body: AskIn, assistant: AssistantDep, now: NowDep) -> AskOut:
 
 
 def _moment(open_at: str, now: datetime) -> Moment:
-    """Convierte `abierto_en`, ya validado, en el momento que se comprueba."""
     if open_at == OPEN_AT_NOW:
         return Moment.from_datetime(now)
     weekday, hour = open_at.split("T")

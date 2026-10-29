@@ -12,14 +12,11 @@ import { PoiService } from '../services/poi.service';
 export class PlacesStore {
   private readonly resource = inject(PoiService).list();
 
-  /** Valor, carga y error del catálogo, de solo lectura. */
   readonly catalog: Resource<Poi[] | undefined> = this.resource;
   readonly pois = computed<readonly Poi[]>(() =>
     this.resource.hasValue() ? this.resource.value() : [],
   );
-  /** Número de lugares; null mientras el catálogo no ha llegado. */
   readonly count = computed(() => (this.resource.hasValue() ? this.resource.value().length : null));
-  /** Lugares de cada categoría; null mientras el catálogo no ha llegado. */
   readonly countByCategory = computed<ReadonlyMap<Category, number> | null>(() => {
     if (!this.resource.hasValue()) {
       return null;

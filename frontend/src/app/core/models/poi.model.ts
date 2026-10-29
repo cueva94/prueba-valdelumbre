@@ -5,7 +5,6 @@
 
 export type Language = 'es' | 'en';
 
-/** Los dos valores de `idioma` que admite la API. */
 export const LANGUAGES: readonly Language[] = ['es', 'en'];
 
 export function isLanguage(value: unknown): value is Language {

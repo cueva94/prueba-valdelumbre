@@ -46,9 +46,6 @@ def coordinates_of(catalog: Catalog, poi_id: str) -> Coordinates | None:
     return next(poi.coordinates for poi in catalog.pois if poi.id == poi_id)
 
 
-# --- D1 · Instrucciones incrustadas -----------------------------------------------------------
-
-
 def test_d1_removes_the_instruction_and_leaves_structured_data_untouched():
     poi, incidents = normalize_one(
         descripcion={
@@ -73,8 +70,6 @@ def test_d1_accessibility_never_comes_from_the_text():
 
     assert poi.accessible is False
 
-
-# --- D2 · Duplicados --------------------------------------------------------------------------
 
 COMPLETE = record(id="poi-complete")
 INCOMPLETE = record(
@@ -111,8 +106,8 @@ def test_d2_different_names_in_the_same_place_are_not_duplicates():
 @pytest.mark.parametrize(
     ("distance_km", "is_duplicate"),
     [
-        (DUPLICATE_DISTANCE_KM - 0.001, True),  # 1 m por debajo del umbral
-        (DUPLICATE_DISTANCE_KM + 0.001, False),  # 1 m por encima
+        (DUPLICATE_DISTANCE_KM - 0.001, True),
+        (DUPLICATE_DISTANCE_KM + 0.001, False),
     ],
 )
 def test_d2_distance_limit_between_duplicates(distance_km, is_duplicate):
@@ -132,14 +127,10 @@ def test_d2_duplicate_distance_is_configurable():
 
 
 def test_d2_records_without_coordinates_are_never_merged():
-    # Sin saber dónde están, el mismo nombre no basta para afirmar que son el mismo lugar.
     first = record(id="poi-a", lat=None, lon=None)
     second = record(id="poi-b", lat=None, lon=None)
 
     assert [poi.id for poi in normalize_catalog([first, second]).pois] == ["poi-a", "poi-b"]
-
-
-# --- D3 · Coordenadas -------------------------------------------------------------------------
 
 
 def test_d3_fixes_swapped_latitude_and_longitude():
@@ -186,8 +177,8 @@ def test_d3_out_of_range_coordinates_do_not_move_the_town_centre():
 @pytest.mark.parametrize(
     ("distance_km", "is_kept"),
     [
-        (TOWN_RADIUS_KM - 0.1, True),  # 100 m dentro del radio
-        (TOWN_RADIUS_KM + 0.1, False),  # 100 m fuera
+        (TOWN_RADIUS_KM - 0.1, True),
+        (TOWN_RADIUS_KM + 0.1, False),
     ],
 )
 def test_d3_town_radius_limit(distance_km, is_kept):
@@ -221,9 +212,6 @@ def test_d3_with_fewer_than_three_points_only_ranges_are_checked():
     assert coordinates_of(catalog, "c") is None  # latitud imposible
 
 
-# --- D4 · Precio ------------------------------------------------------------------------------
-
-
 @pytest.mark.parametrize(
     ("value", "expected"),
     [
@@ -255,18 +243,12 @@ def test_d4_free_means_zero():
     assert poi.price.is_free
 
 
-# --- D5 · Accesibilidad -----------------------------------------------------------------------
-
-
 @pytest.mark.parametrize("value", [None, "sí", 1])
 def test_d5_only_true_or_false_are_accessibility_data(value):
     poi, incidents = normalize_one(accesible=value)
 
     assert poi.accessible is None
     assert defects(incidents) == {Defect.UNKNOWN_ACCESSIBILITY}
-
-
-# --- D6 / D7 · Horarios -----------------------------------------------------------------------
 
 
 def test_d6_without_slots_opening_hours_are_unknown():
@@ -308,7 +290,7 @@ def test_a_slot_crossing_midnight_is_valid():
         {"dias": [1], "abre": "10h", "cierra": "14:00"},
         {"dias": [1], "abre": "10:00", "cierra": "14:00", "temporada": "13-01/09-30"},
         {"dias": [1], "abre": "10:00", "cierra": "14:00", "temporada": "verano"},
-        "10:00-14:00",  # texto en lugar de un objeto
+        "10:00-14:00",
     ],
 )
 def test_slots_that_cannot_be_parsed_are_discarded(slot):
@@ -330,9 +312,6 @@ def test_a_discarded_slot_never_turns_into_closed():
     assert opening_status(incomplete.opening_hours, at_12) == OpeningStatus.OPEN
     assert opening_status(incomplete.opening_hours, at_17) == OpeningStatus.UNKNOWN
     assert opening_status(complete.opening_hours, at_17) == OpeningStatus.CLOSED
-
-
-# --- D8 · Categorías --------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize(
@@ -359,18 +338,12 @@ def test_unknown_or_missing_categories_stay_unknown(value):
     assert defects(incidents) == {Defect.VALIDATION}
 
 
-# --- D9 · Traducciones ------------------------------------------------------------------------
-
-
 def test_d9_empty_translation_falls_back_to_spanish_and_says_so():
     poi, incidents = normalize_one(nombre={"es": "Plaza Mayor", "en": ""})
 
     assert poi.name.en is None
     assert poi.name.in_language(Language.EN) == LocalizedText("Plaza Mayor", Language.ES)
     assert defects(incidents) == {Defect.MISSING_TRANSLATION}
-
-
-# --- Reglas preventivas (V) y garantías generales ----------------------------------------------
 
 
 @pytest.mark.parametrize(
@@ -386,7 +359,6 @@ def test_records_without_the_essentials_are_not_published(bad):
 
 @pytest.mark.parametrize(("lat", "lon"), [(None, None), ("40.417", "-3.705"), (True, TOWN_LON)])
 def test_coordinates_that_are_not_numbers_become_unknown(lat, lon):
-    # El registro se publica igualmente; solo deja de situarse en el mapa.
     poi, incidents = normalize_one(lat=lat, lon=lon)
 
     assert poi.coordinates is None

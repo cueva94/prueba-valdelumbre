@@ -54,7 +54,6 @@ interface TodayHours {
   styleUrl: './place-detail.page.css',
 })
 export class PlaceDetailPage {
-  /** Parámetro de la ruta `lugares/:id`. */
   readonly id = input.required<string>();
 
   private readonly router = inject(Router);
@@ -107,7 +106,6 @@ export class PlaceDetailPage {
       ? weeklySchedule(this.place.value().horario, weekdayInTown(), this.language)
       : [],
   );
-  /** «del 1 de junio al 30 de septiembre» si todo el horario es de esa temporada. */
   protected readonly scheduleSeason = computed(() => {
     const season = this.place.hasValue() ? sharedSeason(this.place.value().horario) : null;
     return season ? seasonText(season, this.language, 'inline') : '';

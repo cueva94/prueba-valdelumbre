@@ -12,7 +12,6 @@ import { TRANSLATIONS } from '../../../testing/translations';
 import { LANGUAGE_STORAGE_KEY } from '../persistence/preferences-storage.service';
 import { LanguageService } from './language.service';
 
-/** Claves de un JSON de traducciones, con su ruta: `home.title`, `common.places.one`… */
 function keysOf(translations: TranslationObject, prefix = ''): string[] {
   return Object.entries(translations).flatMap(([key, value]) => {
     const path = prefix ? `${prefix}.${key}` : key;

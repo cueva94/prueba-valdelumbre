@@ -18,8 +18,7 @@ export class App {
 
   constructor() {
     // Al cambiar de página, el foco pasa al contenido para que el lector de pantalla no se quede
-    // en el enlace pulsado. Solo si cambia la ruta: filtrar o preguntar (cambios en la URL de la
-    // misma página) no debe mover el foco.
+    // en el enlace pulsado. Solo si cambia la ruta.
     let previousPath: string | null = null;
     inject(Router)
       .events.pipe(

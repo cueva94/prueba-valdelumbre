@@ -1,5 +1,3 @@
-"""Dependencias de las rutas: servicios de la aplicación, reloj y validación de parámetros."""
-
 from collections.abc import Callable
 from datetime import datetime
 

@@ -90,17 +90,14 @@ class QueryIntent:
 
     @property
     def contradicts_itself(self) -> bool:
-        """Pide una condición y su contraria («accesibles y no accesibles»): nada la cumple."""
         return (self.accessible_only and self.not_accessible) or (self.free_only and self.not_free)
 
     @property
     def is_empty(self) -> bool:
-        """No se ha reconocido nada que se pueda buscar en el catálogo."""
         return not (self.topics or self.terms or self.has_conditions)
 
 
 def interpret_question(question: str, now: datetime) -> QueryIntent:
-    """Traduce la pregunta a temas, términos de búsqueda y condiciones."""
     text = _Text(normalize_text(question))
 
     topics = tuple(topic for topic in TOPICS if text.take(topic.triggers))

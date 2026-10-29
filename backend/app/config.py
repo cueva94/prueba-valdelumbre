@@ -1,5 +1,3 @@
-"""Configuración leída del entorno, con valores por defecto para desarrollo local."""
-
 import os
 from dataclasses import dataclass
 from pathlib import Path

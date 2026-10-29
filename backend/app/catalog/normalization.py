@@ -1,6 +1,6 @@
 """Normalización del catálogo crudo con reglas generales; cada corrección queda como incidencia.
 
-Ninguna regla menciona ids concretos. Los defectos y las decisiones están en DATOS.md (D1…D9, V).
+Ninguna regla menciona ids concretos. Los defectos y las decisiones están en DATOS.md.
 El resultado es determinista: los mismos registros producen el mismo catálogo y las mismas
 incidencias, en el mismo orden.
 """
@@ -35,8 +35,6 @@ type JsonValue = bool | int | float | str | list[JsonValue] | dict[str, JsonValu
 
 @dataclass(frozen=True)
 class NormalizationThresholds:
-    """Distancias de las reglas geográficas (DATOS.md → D2 y D3), configurables por parámetro."""
-
     # Un punto a más de esta distancia del centro del catálogo (la mediana) no está en el pueblo.
     # 10 km es el diámetro aproximado de un municipio español medio (~62 km²); en los datos de
     # la prueba, el punto legítimo más lejano está a 2,6 km del centro.
@@ -53,7 +51,7 @@ MIN_POINTS_FOR_TOWN_CENTRE = 3
 EARTH_RADIUS_KM = 6371.0
 MAX_ABS_LATITUDE = 90.0
 MAX_ABS_LONGITUDE = 180.0
-ISO_WEEKDAYS = range(1, 8)  # 1 = lunes … 7 = domingo
+ISO_WEEKDAYS = range(1, 8)
 # Año bisiesto de referencia para validar fechas de temporada: admite el 29 de febrero.
 LEAP_YEAR = 2000
 
@@ -96,8 +94,6 @@ class _Normalizer:
             incidents=tuple(self.incidents),
             records_read=len(records),
         )
-
-    # --- Registro a registro ---------------------------------------------------------------
 
     def _poi(self, record: JsonValue, position: int) -> Poi | None:
         if not isinstance(record, dict):
@@ -299,8 +295,6 @@ class _Normalizer:
         self.report(Defect.VALIDATION, poi_id, field, f"franja descartada: {reason}")
         return None, False
 
-    # --- Reglas sobre el catálogo completo -------------------------------------------------
-
     def _validate_coordinates(self, pois: list[Poi]) -> list[Poi]:
         """D3: rangos geográficos y ubicación respecto al resto de puntos.
 
@@ -374,9 +368,6 @@ class _Normalizer:
                     f"conserva {best.id}, que está más completo",
                 )
         return [poi for poi in pois if poi.id not in discarded]
-
-
-# --- Funciones auxiliares sin estado ---------------------------------------------------------
 
 
 def _is_number(value: int | float) -> bool:

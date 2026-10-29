@@ -145,7 +145,6 @@
     margin-left: 0;
   }
 
-  /* En móvil, la lista ocupa su altura natural y el mapa va debajo. */
   .results {
     height: auto;
     overflow-y: visible;

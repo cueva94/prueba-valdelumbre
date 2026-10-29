@@ -19,7 +19,6 @@ const copiesOf = (poi: Poi, count: number): Poi[] =>
     id: `${poi.id}-${index + 1}`,
     nombre: { ...poi.nombre, texto: `${poi.nombre.texto} ${index + 1}` },
   }));
-// 8 lugares: 7 monumentos y 1 museo.
 const LARGE_CATALOG = [...copiesOf(CASTLE, 7), ...copiesOf(OIL_MUSEUM, 1)];
 
 describe('HomePage (Inicio)', () => {

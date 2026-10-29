@@ -39,8 +39,6 @@ class Condition(StrEnum):
 
 @dataclass(frozen=True)
 class Candidate:
-    """Punto relacionado con lo que se pregunta y cómo queda frente a cada condición."""
-
     poi: Poi
     relevance: int
     failed: tuple[Condition, ...]  # el dato dice que no la cumple
@@ -56,7 +54,7 @@ class RetrievalResult:
     intent: QueryIntent
     candidates: tuple[Candidate, ...]  # relacionados con la pregunta, los más relevantes antes
     unknown_terms: tuple[SearchTerm, ...]  # términos que no aparecen en ningún punto
-    names_specific_places: bool  # la pregunta nombra lugares concretos («el castillo»)
+    names_specific_places: bool
 
     @property
     def matches(self) -> tuple[Poi, ...]:
@@ -189,7 +187,7 @@ def _searchable(poi: Poi) -> _SearchablePoi:
         poi.description.es,
         poi.description.en or "",
         *poi.tags,
-        poi.category.replace("_", " ") if poi.category else "",  # «espacio_publico»
+        poi.category.replace("_", " ") if poi.category else "",
     ]
     words = _words(" ".join(texts))
     name_words = _words(f"{poi.name.es} {poi.name.en or ''}")

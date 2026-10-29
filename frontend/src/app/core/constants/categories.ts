@@ -2,7 +2,6 @@ import { Category } from '../models/poi.model';
 
 export interface CategoryInfo {
   id: Category;
-  /** Claves de traducción del nombre en singular y en plural. */
   labelKey: string;
   pluralKey: string;
   /** Trazo SVG de 24 × 24 para el icono decorativo. */
@@ -59,7 +58,6 @@ export function categoryInfo(id: Category | null): CategoryInfo | undefined {
   return CATEGORIES.find((category) => category.id === id);
 }
 
-/** Clave del nombre de la categoría de un lugar; sin categoría, «Sin categoría». */
 export function categoryLabelKey(id: Category | null): string {
   return categoryInfo(id)?.labelKey ?? 'common.noCategory';
 }

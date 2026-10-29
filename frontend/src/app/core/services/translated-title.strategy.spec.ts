@@ -14,7 +14,6 @@ describe('TranslatedTitleStrategy', () => {
       providers: [
         ...provideTestTranslations(),
         provideRouter(routes),
-        // Como en app.config.ts: el `title` de cada ruta es una clave de traducción.
         { provide: TitleStrategy, useExisting: TranslatedTitleStrategy },
       ],
     });

@@ -1,5 +1,3 @@
-"""Contratos HTTP: rutas, filtros, códigos de estado y errores de validación."""
-
 import json
 
 import pytest
@@ -35,9 +33,6 @@ def test_health(client):
 
     assert response.status_code == 200
     assert response.json() == {"estado": "ok"}
-
-
-# --- GET /pois ---------------------------------------------------------------------------------
 
 
 def test_list_returns_the_published_catalog_without_the_duplicate(client):
@@ -162,9 +157,6 @@ def test_repeated_parameters_are_rejected_instead_of_keeping_one(client):
     assert (error["type"], error["loc"]) == ("multiple_values", ["query", "categoria"])
 
 
-# --- GET /pois/{id} ----------------------------------------------------------------------------
-
-
 def test_get_poi_returns_normalized_data(client):
     poi = client.get("/pois/poi-011").json()
 
@@ -201,9 +193,6 @@ def test_unknown_or_excluded_poi_returns_404(client, poi_id):
 
     assert response.status_code == 404
     assert response.json() == {"detail": f"No hay ningún punto de interés con id «{poi_id}»"}
-
-
-# --- POST /preguntar ---------------------------------------------------------------------------
 
 
 def test_ask_contract(client):

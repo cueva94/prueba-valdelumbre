@@ -1,5 +1,3 @@
-"""Los datos originales de la prueba no se modifican (DATOS.md → Principios)."""
-
 import hashlib
 from pathlib import Path
 

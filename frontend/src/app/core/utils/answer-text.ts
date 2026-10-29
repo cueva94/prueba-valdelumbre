@@ -62,7 +62,6 @@ function replaceAll(line: string, rules: readonly Rule[]): string {
   );
 }
 
-/** «a, b y c». */
 function join(items: string[], lastSeparator: string): string {
   return items.length > 1
     ? `${items.slice(0, -1).join(', ')}${lastSeparator}${items.at(-1)}`

@@ -2,7 +2,6 @@
   display: block;
 }
 
-/* Pie oscuro, con la tinta de la marca: cierra todas las pantallas. */
 .footer {
   background: var(--vl-ink);
   color: var(--vl-footer-text);

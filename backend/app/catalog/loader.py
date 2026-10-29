@@ -1,5 +1,3 @@
-"""Lectura del catálogo original desde disco."""
-
 import json
 from pathlib import Path
 
