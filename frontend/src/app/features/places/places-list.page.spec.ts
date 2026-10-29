@@ -1,8 +1,9 @@
 import { HttpRequest, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { NavigationEnd, provideRouter, Router, withComponentInputBinding } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import { filter, firstValueFrom } from 'rxjs';
 
 import { CASTLE, OIL_MUSEUM, TEST_CATALOG } from '../../../testing/pois';
 import { provideTestTranslations } from '../../../testing/translations';
@@ -48,6 +49,24 @@ describe('PlacesListPage (Explorar)', () => {
   const cardNames = (page: HTMLElement) =>
     [...page.querySelectorAll('app-poi-card h2')].map((name) => name.textContent?.trim());
 
+  /** Usa la barra de filtros como el visitante y devuelve la URL a la que lleva. */
+  async function urlAfter(action: () => void): Promise<string> {
+    const router = TestBed.inject(Router);
+    const navigated = firstValueFrom(
+      router.events.pipe(filter((event) => event instanceof NavigationEnd)),
+    );
+    action();
+    await navigated;
+    TestBed.tick();
+    return decodeURIComponent(router.url);
+  }
+
+  const choose = (page: HTMLElement, selector: string, value: string) => () => {
+    const field = page.querySelector(selector) as HTMLSelectElement;
+    field.value = value;
+    field.dispatchEvent(new Event('change'));
+  };
+
   it('sin filtros pide el catálogo una sola vez y lo lista entero, con una chincheta por lugar', async () => {
     await open('/explorar');
     http.expectOne(isCatalog).flush(TEST_CATALOG);
@@ -77,6 +96,63 @@ describe('PlacesListPage (Explorar)', () => {
       chip.textContent?.includes('Museos'),
     );
     expect(museums?.getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('la categoría y la accesibilidad elegidas en la barra van a la URL y al backend', async () => {
+    await open('/explorar');
+    http.expectOne(isCatalog).flush(TEST_CATALOG);
+    let page = await render();
+
+    const museums = [...page.querySelectorAll('fieldset button')].find((chip) =>
+      chip.textContent?.includes('Museos'),
+    ) as HTMLButtonElement;
+    expect(await urlAfter(() => museums.click())).toBe('/explorar?category=museo');
+    http.expectOne(isFiltered).flush([OIL_MUSEUM]);
+    page = await render();
+
+    expect(await urlAfter(choose(page, '#filtro-accesible', 'false'))).toBe(
+      '/explorar?category=museo&accessible=false',
+    );
+    const filtered = http.expectOne(isFiltered);
+    expect(filtered.request.params.get('categoria')).toBe('museo');
+    expect(filtered.request.params.get('accesible')).toBe('false');
+    filtered.flush([]);
+    page = await render();
+
+    const clear = page.querySelector('.filters__summary button') as HTMLButtonElement;
+    expect(await urlAfter(() => clear.click())).toBe('/explorar');
+    // Sin filtros vuelve a listar el catálogo que ya tenía, sin pedir nada más.
+    http.expectNone(isFiltered);
+    expect(cardNames(await render())).toHaveLength(TEST_CATALOG.length);
+  });
+
+  it('el día conserva la hora elegida, y «En cualquier momento» quita el filtro de apertura', async () => {
+    await open('/explorar');
+    http.expectOne(isCatalog).flush(TEST_CATALOG);
+    let page = await render();
+    expect((page.querySelector('#filtro-hora') as HTMLSelectElement).disabled).toBe(true);
+
+    expect(await urlAfter(choose(page, '#filtro-dia', '1'))).toBe('/explorar?open=1T12:00');
+    http.expectOne(isFiltered).flush([CASTLE]);
+    page = await render();
+
+    expect(await urlAfter(choose(page, '#filtro-hora', '18:00'))).toBe('/explorar?open=1T18:00');
+    http.expectOne(isFiltered).flush([CASTLE]);
+    page = await render();
+
+    expect(await urlAfter(choose(page, '#filtro-dia', '7'))).toBe('/explorar?open=7T18:00');
+    const sunday = http.expectOne(isFiltered);
+    expect(sunday.request.params.get('abierto_en')).toBe('7T18:00');
+    sunday.flush([]);
+    page = await render();
+
+    expect(await urlAfter(choose(page, '#filtro-dia', 'now'))).toBe('/explorar?open=now');
+    http.expectOne(isFiltered).flush([]);
+    page = await render();
+    expect((page.querySelector('#filtro-hora') as HTMLSelectElement).disabled).toBe(true);
+
+    expect(await urlAfter(choose(page, '#filtro-dia', ''))).toBe('/explorar');
+    http.expectNone(isFiltered);
   });
 
   it('ignora los valores de la URL que no entiende en lugar de enviarlos', async () => {

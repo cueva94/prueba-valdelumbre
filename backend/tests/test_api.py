@@ -6,7 +6,8 @@ import pytest
 from fastapi.testclient import TestClient
 from httpx2 import Response
 
-from app.config import Settings
+from app.api.dependencies import get_town_now
+from app.config import TOWN_TIMEZONE, Settings
 from app.main import create_app
 from tests.conftest import with_fixed_clock
 from tests.factories import record
@@ -103,6 +104,11 @@ def test_filter_open_now_uses_the_town_clock(client):
     assert "poi-014" not in now
 
 
+def test_now_is_the_town_time_not_the_server_time():
+    # Los demás tests fijan el reloj; este comprueba el real (los contenedores van en UTC).
+    assert get_town_now().tzinfo == TOWN_TIMEZONE
+
+
 def test_filters_are_combined(client):
     response = client.get(
         "/pois", params={"categoria": "monumento", "accesible": "false", "abierto_en": "1T12:00"}
@@ -172,6 +178,23 @@ def test_unparseable_hours_are_exposed_as_unknown(client):
     assert hours == {"siempre_abierto": False, "franjas": [], "incompleto": False}
 
 
+def test_seasonal_hours_contract(client):
+    slot = client.get("/pois/poi-014").json()["horario"]["franjas"][0]
+
+    assert slot["temporada"] == {"inicio": "06-01", "fin": "09-30"}  # MM-DD, ambos incluidos
+
+
+def test_a_price_that_is_not_an_amount_is_published_as_text(tmp_path):
+    catalog_file = tmp_path / "pois.json"
+    catalog_file.write_text(json.dumps([record(precio="consultar en taquilla")]))
+    app = with_fixed_clock(create_app(Settings(pois_path=catalog_file)))
+
+    with TestClient(app) as client:
+        poi = client.get("/pois/poi-test").json()
+
+    assert poi["precio"] == {"tipo": "texto", "texto": "consultar en taquilla"}
+
+
 @pytest.mark.parametrize("poi_id", ["poi-004", "poi-999"])
 def test_unknown_or_excluded_poi_returns_404(client, poi_id):
     response = client.get(f"/pois/{poi_id}")
@@ -200,6 +223,11 @@ def test_ask_defaults_to_spanish(client):
     body = client.post("/preguntar", json={"pregunta": "museos"}).json()
 
     assert body["idioma"] == "es"
+
+
+def test_ask_accepts_a_question_of_the_maximum_length(client):
+    # La caja de la pantalla admite hasta 500 caracteres: la API tiene que aceptarlos todos.
+    assert client.post("/preguntar", json={"pregunta": "x" * 500}).status_code == 200
 
 
 @pytest.mark.parametrize(

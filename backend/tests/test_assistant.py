@@ -58,6 +58,8 @@ def test_extracts_topic_and_accessibility():
         ("¿Abre el domingo a las 9h?", Moment(SUNDAY, time(9))),
         ("¿Y a mediodía?", Moment(MONDAY, time(12), date(2026, 10, 26))),  # hoy
         ("¿Qué abre a las 18:30?", Moment(MONDAY, time(18, 30), date(2026, 10, 26))),
+        ("What is open on Sunday at 12 am?", Moment(SUNDAY, time(0))),  # medianoche
+        ("What is open on Sunday at 12 pm?", Moment(SUNDAY, time(12))),  # mediodía
     ],
 )
 def test_extracts_the_moment(question, expected):
@@ -365,6 +367,19 @@ def test_conversational_verbs_do_not_hide_words_with_content(assistant):
     assert "Háblame" not in text
 
 
+@pytest.mark.xfail(
+    strict=True,
+    reason=(
+        "Posible error: «los» no está en STOPWORDS, así que se busca como palabra, coincide con el "
+        "nombre «Casa de los Tapices» y la respuesta habla solo de ese museo."
+    ),
+)
+def test_an_article_does_not_narrow_the_search(assistant):
+    cited, _ = ask(assistant, "¿Cuáles son los museos accesibles?")
+
+    assert cited == ["poi-003", "poi-015"]  # lo mismo que «Museos accesibles»
+
+
 @pytest.mark.parametrize(
     ("question", "poi_filter"),
     [
@@ -441,3 +456,93 @@ def test_the_writer_never_decides_the_cited_ids():
     assert (
         rogue.answer(question, ES, FIXED_NOW).pois == template.answer(question, ES, FIXED_NOW).pois
     )
+
+
+# --- Horario, precio y momento que se piden -----------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("question", "language", "expected"),
+    [
+        (
+            "¿A qué hora abre el castillo?",
+            ES,
+            "Horario: de lunes a sábado de 10:00 a 14:00; de lunes a sábado de 17:00 a 20:00.",
+        ),
+        (
+            "What time does the castle open?",
+            EN,
+            "Opening hours: Monday to Saturday from 10:00 to 14:00; "
+            "Monday to Saturday from 17:00 to 20:00.",
+        ),
+        ("¿Horario de la Casa de los Tapices?", ES, "Horario: sábado y domingo de 11:00 a 14:00."),
+        # La temporada va como día/mes: del 1 de junio al 30 de septiembre.
+        (
+            "¿Cuál es el horario de la piscina natural?",
+            ES,
+            "Horario: todos los días de 11:00 a 20:00 (del 01/06 al 30/09).",
+        ),
+        ("¿Horario de la ermita?", ES, "Horario: no consta."),  # sin horario: ni abierto ni cerrado
+    ],
+)
+def test_asking_for_the_hours_describes_the_published_hours(
+    assistant, question, language, expected
+):
+    _, text = ask(assistant, question, language)
+
+    assert expected in text
+
+
+@pytest.mark.parametrize(
+    ("question", "language", "expected"),
+    [
+        ("¿Cuánto cuesta el castillo?", ES, "Precio: 4,5 €."),  # coma decimal en español
+        ("How much is the castle?", EN, "Price: 4.5 €."),
+        ("¿Cuánto cuesta el Restaurante El Lagar?", ES, "Precio: de 25 a 35 €."),
+        ("Price of El Lagar Restaurant", EN, "Price: 25\u201335 €."),
+        ("¿Cuánto cuesta el Museo del Aceite?", ES, "Precio: gratis."),
+        ("¿Cuánto cuesta la Farmacia Central?", ES, "Precio: no consta."),  # desconocido, no gratis
+    ],
+)
+def test_asking_for_the_price_gives_it_in_the_format_of_the_language(
+    assistant, question, language, expected
+):
+    _, text = ask(assistant, question, language)
+
+    assert expected in text
+
+
+def test_requested_hours_and_price_never_fill_gaps_in_the_data():
+    # El catálogo real no tiene ninguno de los dos casos: un precio que no es un importe y un
+    # horario con una franja que no se pudo interpretar.
+    odd = record(
+        precio="consultar",
+        horario={
+            "always_open": False,
+            "franjas": [
+                {"dias": [1, 3, 5], "abre": "10:00", "cierra": "14:00"},
+                {"dias": [6], "abre": "16h", "cierra": "20:00"},
+            ],
+        },
+    )
+
+    answer = assistant_for(odd).answer("¿Horario y precio del sitio de prueba?", ES, FIXED_NOW)
+
+    assert "Horario: lunes, miércoles y viernes de 10:00 a 14:00 (incompleto)." in answer.text
+    assert "Precio: consultar." in answer.text
+
+
+@pytest.mark.parametrize(
+    ("question", "language", "moment"),
+    [
+        ("¿Qué está abierto ahora?", ES, "(abierto ahora, lunes 26/10 a las 12:00)"),
+        ("What is open now?", EN, "(open now, Monday 26/10 at 12:00)"),
+        ("¿Qué abre a las 18:30?", ES, "(abierto el lunes 26/10 a las 18:30)"),  # hoy
+        ("¿Qué abre el domingo?", ES, "(abierto el domingo)"),
+    ],
+)
+def test_the_answer_states_the_moment_it_has_checked(assistant, question, language, moment):
+    # Con «ahora» o una hora sin día, el visitante ve qué día y hora del pueblo se han usado.
+    _, text = ask(assistant, question, language)
+
+    assert moment in text

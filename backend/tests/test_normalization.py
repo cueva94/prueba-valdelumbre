@@ -131,6 +131,14 @@ def test_d2_duplicate_distance_is_configurable():
     assert len(normalize_catalog([COMPLETE, at_100_m], thresholds).pois) == 1
 
 
+def test_d2_records_without_coordinates_are_never_merged():
+    # Sin saber dónde están, el mismo nombre no basta para afirmar que son el mismo lugar.
+    first = record(id="poi-a", lat=None, lon=None)
+    second = record(id="poi-b", lat=None, lon=None)
+
+    assert [poi.id for poi in normalize_catalog([first, second]).pois] == ["poi-a", "poi-b"]
+
+
 # --- D3 · Coordenadas -------------------------------------------------------------------------
 
 
@@ -299,6 +307,8 @@ def test_a_slot_crossing_midnight_is_valid():
         {"dias": [0, 8], "abre": "10:00", "cierra": "14:00"},
         {"dias": [1], "abre": "10h", "cierra": "14:00"},
         {"dias": [1], "abre": "10:00", "cierra": "14:00", "temporada": "13-01/09-30"},
+        {"dias": [1], "abre": "10:00", "cierra": "14:00", "temporada": "verano"},
+        "10:00-14:00",  # texto en lugar de un objeto
     ],
 )
 def test_slots_that_cannot_be_parsed_are_discarded(slot):
@@ -372,6 +382,15 @@ def test_records_without_the_essentials_are_not_published(bad):
 
     assert [poi.id for poi in catalog.pois] == ["poi-good"]
     assert Defect.VALIDATION in defects(catalog.incidents)
+
+
+@pytest.mark.parametrize(("lat", "lon"), [(None, None), ("40.417", "-3.705"), (True, TOWN_LON)])
+def test_coordinates_that_are_not_numbers_become_unknown(lat, lon):
+    # El registro se publica igualmente; solo deja de situarse en el mapa.
+    poi, incidents = normalize_one(lat=lat, lon=lon)
+
+    assert poi.coordinates is None
+    assert defects(incidents) == {Defect.VALIDATION}
 
 
 def test_repeated_id_keeps_the_first_occurrence():

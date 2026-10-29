@@ -117,6 +117,28 @@ describe('PlaceDetailPage (Ficha)', () => {
     expect(text(page.querySelector('.status'))).toBe('Cerrado ahora');
   });
 
+  it('con el horario incompleto, no estar abierto ahora no lo da por cerrado', async () => {
+    // Lunes 26/10/2026 a las 10:30 en Valdelumbre.
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-26T09:30:00Z'));
+    const weekendsOnly: Poi = {
+      ...CASTLE,
+      horario: {
+        siempre_abierto: false,
+        // En el original había alguna franja más que no se pudo interpretar.
+        incompleto: true,
+        franjas: [{ dias: [6, 7], abre: '10:00', cierra: '14:00', temporada: null }],
+      },
+    };
+    const page = await show('poi-001', (request) => request.flush(weekendsOnly), []);
+
+    expect(text(page.querySelector('.status'))).toBe('Horario por confirmar');
+    expect(fact(page, 'Hoy')).toBe('Sin datos');
+    const rows = [...page.querySelectorAll('table.hours tr')].map(text);
+    expect(rows.find((row) => row?.startsWith('Martes'))).toBe('Martes Sin datos');
+    expect(rows.find((row) => row?.startsWith('Sábado'))).toBe('Sábado 10:00 – 14:00');
+  });
+
   it('un horario no publicado no se presenta como cerrado', async () => {
     const page = await show('poi-018', (request) => request.flush(HERMITAGE));
 
