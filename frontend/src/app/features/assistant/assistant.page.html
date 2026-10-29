@@ -93,7 +93,7 @@
         </header>
 
         <div class="answer__body">
-          @if (answer.isLoading()) {
+          @if (answer.isLoading() && !answer.hasValue()) {
             <p class="answer__status" role="status">{{ 'assistant.loading' | translate }}</p>
             <div class="skeleton" aria-hidden="true">
               <span class="skeleton__line"></span>

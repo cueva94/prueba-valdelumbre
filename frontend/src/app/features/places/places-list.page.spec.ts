@@ -127,12 +127,19 @@ describe('PlacesListPage (Explorar)', () => {
   it('al cambiar de idioma traduce la interfaz y vuelve a pedir los lugares en ese idioma', async () => {
     await open('/explorar');
     http.expectOne(isCatalog).flush(TEST_CATALOG);
+    await render();
 
     await TestBed.inject(LanguageService).use('en');
     TestBed.tick();
 
     const english = http.expectOne(isCatalog);
     expect(english.request.params.get('idioma')).toBe('en');
+    // Mientras llega la respuesta en inglés, la lista sigue a la vista: nada de pantalla vacía.
+    harness.fixture.detectChanges();
+    const waiting = harness.routeNativeElement as HTMLElement;
+    expect(cardNames(waiting)).toHaveLength(TEST_CATALOG.length);
+    expect(waiting.querySelector('.skeleton-card')).toBeNull();
+
     english.flush(TEST_CATALOG);
     const page = await render();
 

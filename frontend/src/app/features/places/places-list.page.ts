@@ -121,13 +121,10 @@ export class PlacesListPage {
 
   protected readonly countLabel = computed(() => {
     const results = this.results();
-    if (results.isLoading()) {
-      return this.language.t('common.loadingPlaces');
+    if (results.hasValue()) {
+      return this.language.plural('common.places', results.value().length);
     }
-    if (!results.hasValue()) {
-      return '';
-    }
-    return this.language.plural('common.places', results.value().length);
+    return results.isLoading() ? this.language.t('common.loadingPlaces') : '';
   });
 
   /**

@@ -13,7 +13,7 @@ export class PlacesStore {
   private readonly resource = inject(PoiService).list();
 
   /** Valor, carga y error del catálogo, de solo lectura. */
-  readonly catalog: Resource<Poi[] | undefined> = this.resource.asReadonly();
+  readonly catalog: Resource<Poi[] | undefined> = this.resource;
   readonly pois = computed<readonly Poi[]>(() =>
     this.resource.hasValue() ? this.resource.value() : [],
   );

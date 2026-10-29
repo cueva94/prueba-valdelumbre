@@ -142,6 +142,38 @@ describe('AssistantPage', () => {
     expect(page.querySelector('ul[aria-label="Places in this answer"]')).not.toBeNull();
   });
 
+  it('al cambiar de idioma mantiene la respuesta a la vista hasta que llega la nueva', async () => {
+    await open('/asistente?q=¿Qué museos son accesibles?');
+    http.expectOne('/api/preguntar').flush(GROUNDED);
+    await render();
+
+    await TestBed.inject(LanguageService).use('en');
+    TestBed.tick();
+    const english = http.expectOne('/api/preguntar');
+    harness.fixture.detectChanges();
+    const waiting = harness.routeNativeElement as HTMLElement;
+
+    expect(waiting.querySelector('.skeleton')).toBeNull();
+    expect(waiting.querySelectorAll('ul.cited li')).toHaveLength(1);
+    english.flush({ ...GROUNDED, idioma: 'en' });
+  });
+
+  it('una pregunta nueva no enseña la respuesta anterior mientras carga', async () => {
+    await open('/asistente?q=¿Qué museos son accesibles?');
+    http.expectOne('/api/preguntar').flush(GROUNDED);
+    await render();
+
+    await harness.navigateByUrl('/asistente?q=¿Hay algún sitio con tirolina?');
+    TestBed.tick();
+    const next = http.expectOne('/api/preguntar');
+    harness.fixture.detectChanges();
+    const waiting = harness.routeNativeElement as HTMLElement;
+
+    expect(waiting.querySelector('.skeleton')).not.toBeNull();
+    expect(waiting.querySelector('ul.cited')).toBeNull();
+    next.flush(NO_MATCH);
+  });
+
   it('preguntar desde la caja lleva la pregunta a la URL', async () => {
     await open('/asistente');
     const page = await render();
